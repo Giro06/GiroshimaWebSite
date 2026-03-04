@@ -1338,3 +1338,283 @@ img {
         display: none;
     }
 }
+
+/* ========================================
+   Aurora Background Canvas
+   ======================================== */
+#aurora-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* ========================================
+   Parallax Depth (card tilt via CSS vars)
+   ======================================== */
+.game-card {
+    --px: 0px;
+    --py: 0px;
+}
+
+.game-card:not(:hover) {
+    transform: translate(var(--px), var(--py));
+}
+
+/* ========================================
+   Cursor Skin Picker
+   ======================================== */
+#cursor-picker {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 10001;
+}
+
+.cursor-picker-toggle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cursor-picker-toggle:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+    transform: scale(1.1);
+}
+
+.cursor-picker-menu {
+    position: absolute;
+    bottom: 58px;
+    left: 0;
+    min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px;
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+    pointer-events: none;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+}
+
+.cursor-picker-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.cursor-picker-title {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 6px 10px;
+}
+
+.cursor-skin-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cursor-skin-option:hover {
+    background: rgba(233, 69, 96, 0.1);
+}
+
+.cursor-skin-option.active {
+    background: rgba(233, 69, 96, 0.15);
+    color: var(--accent);
+}
+
+.cursor-skin-option .skin-emoji {
+    font-size: 1.2rem;
+    width: 28px;
+    text-align: center;
+}
+
+/* ========================================
+   Pixel Hunt
+   ======================================== */
+.pixel-hunt-item {
+    position: absolute;
+    z-index: 100;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.15;
+    filter: grayscale(1) brightness(0.5);
+    transition: opacity 0.3s, transform 0.3s, filter 0.3s;
+    padding: 0;
+}
+
+.pixel-hunt-item:hover {
+    opacity: 0.6;
+    filter: grayscale(0.3) brightness(0.8);
+    transform: scale(1.3);
+}
+
+.pixel-hunt-item.collected {
+    opacity: 0.9;
+    filter: none;
+    pointer-events: none;
+}
+
+.pixel-hunt-item.just-collected {
+    animation: huntPop 0.5s ease forwards;
+}
+
+@keyframes huntPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(2.2); }
+    70% { transform: scale(0.8); }
+    100% { transform: scale(1); opacity: 0.9; }
+}
+
+/* Hunt particle burst */
+.hunt-particle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color);
+    z-index: 10002;
+    pointer-events: none;
+    animation: huntBurst 0.6s ease-out forwards;
+}
+
+@keyframes huntBurst {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx, 40px), var(--ty, -40px)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* HUD counter */
+#pixel-hunt-hud {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    z-index: 10001;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#pixel-hunt-hud .hunt-icon {
+    font-size: 1rem;
+}
+
+#pixel-hunt-hud.complete {
+    border-color: #ffd700;
+    color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* Victory overlay */
+.pixel-hunt-victory {
+    position: fixed;
+    inset: 0;
+    z-index: 10003;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.pixel-hunt-victory.show {
+    opacity: 1;
+}
+
+.victory-content {
+    text-align: center;
+    padding: 48px;
+    background: var(--bg-card);
+    border: 1px solid #ffd700;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
+    transform: scale(0.8);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pixel-hunt-victory.show .victory-content {
+    transform: scale(1);
+}
+
+.victory-emoji {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    animation: celebrateBounce 0.4s ease-in-out infinite alternate;
+}
+
+.victory-content h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: #ffd700;
+    margin-bottom: 8px;
+}
+
+.victory-content p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.victory-close {
+    min-width: 120px;
+}
+
+/* Mobile: hide pixel hunt items & cursor picker */
+@media (max-width: 480px) {
+    #cursor-picker { display: none; }
+    .pixel-hunt-item { display: none; }
+    #pixel-hunt-hud { display: none; }
+}
