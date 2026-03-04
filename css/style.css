@@ -953,6 +953,12 @@ img {
     border-color: rgba(233, 69, 96, 0.3);
 }
 
+.item-row.editing {
+    border-color: var(--accent);
+    background: rgba(233, 69, 96, 0.08);
+    box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.15);
+}
+
 .item-row-thumb {
     width: 80px;
     height: 50px;

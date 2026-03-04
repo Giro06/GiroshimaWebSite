@@ -101,6 +101,8 @@
     }
 
     // ---- Games CRUD ----
+    let editingIndex = -1;
+
     function renderGamesList() {
         const list = document.getElementById('games-list');
         const games = getGames();
@@ -111,16 +113,17 @@
         }
 
         list.innerHTML = games.map((game, i) => `
-            <div class="item-row">
+            <div class="item-row${editingIndex === i ? ' editing' : ''}">
                 ${game.image
                     ? `<img class="item-row-thumb" src="${escapeHtml(game.image)}" alt="${escapeHtml(game.title)}">`
                     : `<div class="item-row-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">&#127918;</div>`
                 }
                 <div class="item-row-info">
                     <div class="item-row-title">${escapeHtml(game.title)}</div>
-                    <div class="item-row-subtitle">${game.link ? escapeHtml(game.link) : 'No link'}</div>
+                    <div class="item-row-subtitle">${game.link ? escapeHtml(game.link) : 'No link'}${game.video ? ' &bull; Video' : ''}</div>
                 </div>
                 <div class="item-row-actions">
+                    <button class="btn-icon" onclick="editorEditGame(${i})" title="Edit">&#9998;</button>
                     <button class="btn-icon" onclick="editorMoveGame(${i}, -1)" title="Move up">&#8593;</button>
                     <button class="btn-icon" onclick="editorMoveGame(${i}, 1)" title="Move down">&#8595;</button>
                     <button class="btn-icon delete" onclick="editorDeleteGame(${i})" title="Delete">&#10005;</button>
@@ -128,6 +131,60 @@
             </div>
         `).join('');
     }
+
+    function setFormMode(mode) {
+        const btn = document.getElementById('add-game-btn');
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        const formTitle = document.querySelector('.add-form h3');
+        if (mode === 'edit') {
+            btn.textContent = 'Update Game';
+            cancelBtn.style.display = 'inline-block';
+            formTitle.textContent = 'Edit Game';
+        } else {
+            btn.textContent = 'Add Game';
+            cancelBtn.style.display = 'none';
+            formTitle.textContent = 'Add New Game';
+            editingIndex = -1;
+        }
+    }
+
+    function clearForm() {
+        document.getElementById('game-title').value = '';
+        document.getElementById('game-link').value = '';
+        document.getElementById('game-video').value = '';
+        clearImageUpload();
+        setFormMode('add');
+    }
+
+    window.editorEditGame = function (index) {
+        const games = getGames();
+        const game = games[index];
+        if (!game) return;
+
+        editingIndex = index;
+
+        document.getElementById('game-title').value = game.title || '';
+        document.getElementById('game-link').value = game.link || '';
+        document.getElementById('game-video').value = game.video || '';
+
+        // Set image preview if exists
+        if (game.image) {
+            uploadedImageData = game.image;
+            const preview = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            preview.src = game.image;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        } else {
+            clearImageUpload();
+        }
+
+        setFormMode('edit');
+        renderGamesList();
+
+        // Scroll to form
+        document.querySelector('.add-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     // ---- Image Upload ----
     let uploadedImageData = '';
@@ -171,7 +228,7 @@
         fileInput.value = '';
     }
 
-    function addGame() {
+    function addOrUpdateGame() {
         const title = document.getElementById('game-title').value.trim();
         const link = document.getElementById('game-link').value.trim();
         const video = document.getElementById('game-video').value.trim();
@@ -182,17 +239,25 @@
         }
 
         const games = getGames();
-        games.push({ title, link, video, image: uploadedImageData, id: Date.now() });
-        saveGames(games);
 
-        // Clear form
-        document.getElementById('game-title').value = '';
-        document.getElementById('game-link').value = '';
-        document.getElementById('game-video').value = '';
-        clearImageUpload();
-
-        renderGamesList();
-        showToast('Game added!');
+        if (editingIndex >= 0 && editingIndex < games.length) {
+            // Update existing game
+            games[editingIndex].title = title;
+            games[editingIndex].link = link;
+            games[editingIndex].video = video;
+            games[editingIndex].image = uploadedImageData || games[editingIndex].image;
+            saveGames(games);
+            clearForm();
+            renderGamesList();
+            showToast('Game updated!');
+        } else {
+            // Add new game
+            games.push({ title, link, video, image: uploadedImageData, id: Date.now() });
+            saveGames(games);
+            clearForm();
+            renderGamesList();
+            showToast('Game added!');
+        }
     }
 
     window.editorDeleteGame = function (index) {
@@ -314,7 +379,8 @@
         initTabs();
         initSettings();
 
-        document.getElementById('add-game-btn').addEventListener('click', addGame);
+        document.getElementById('add-game-btn').addEventListener('click', addOrUpdateGame);
+        document.getElementById('cancel-edit-btn').addEventListener('click', clearForm);
         initImageUpload();
     }
 
