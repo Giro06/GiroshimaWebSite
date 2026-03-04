@@ -46,7 +46,7 @@
                     <label for="admin-password">Password</label>
                     <input type="password" id="admin-password" placeholder="Enter admin password">
                 </div>
-                <button class="form-btn" id="login-btn">Login</button>
+                <button type="button" class="form-btn" id="login-btn">Login</button>
                 <p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-top:16px;">
                     First time? Default password: <code style="color:var(--accent);">giroshima2026</code>
                 </p>
@@ -89,8 +89,8 @@
                             </div>
                         </div>
                         <div style="display:flex; gap:12px;">
-                            <button class="form-btn" id="add-game-btn" style="flex:1;">Add Game</button>
-                            <button class="form-btn" id="cancel-edit-btn" style="flex:0 0 auto; background:linear-gradient(135deg, #444, #666); display:none;">Cancel</button>
+                            <button type="button" class="form-btn" id="add-game-btn" style="flex:1;">Add Game</button>
+                            <button type="button" class="form-btn" id="cancel-edit-btn" style="flex:0 0 auto; background:linear-gradient(135deg, #444, #666); display:none;">Cancel</button>
                         </div>
                     </div>
 
@@ -112,7 +112,7 @@
                             <label for="video-url">YouTube URL *</label>
                             <input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=...">
                         </div>
-                        <button class="form-btn" id="add-video-btn">Add Video</button>
+                        <button type="button" class="form-btn" id="add-video-btn">Add Video</button>
                     </div>
 
                     <h3 style="font-family:var(--font-display); font-size:1rem; margin-bottom:16px; color:var(--text-secondary);">Your Videos</h3>
@@ -135,22 +135,22 @@
                             <label for="confirm-pw">Confirm New Password</label>
                             <input type="password" id="confirm-pw" placeholder="Confirm new password">
                         </div>
-                        <button class="form-btn" id="change-pw-btn">Update Password</button>
+                        <button type="button" class="form-btn" id="change-pw-btn">Update Password</button>
                     </div>
 
                     <div class="add-form" style="margin-top: 24px;">
                         <h3>Data Management</h3>
                         <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">Export or import your content data as JSON.</p>
                         <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                            <button class="form-btn" id="export-btn" style="flex:1; min-width:150px;">Export Data</button>
-                            <button class="form-btn" id="import-btn" style="flex:1; min-width:150px; background:var(--accent-secondary);">Import Data</button>
+                            <button type="button" class="form-btn" id="export-btn" style="flex:1; min-width:150px;">Export Data</button>
+                            <button type="button" class="form-btn" id="import-btn" style="flex:1; min-width:150px; background:var(--accent-secondary);">Import Data</button>
                         </div>
                         <input type="file" id="import-file" accept=".json" style="display:none;">
                     </div>
 
                     <div class="add-form" style="margin-top: 24px;">
                         <h3>Logout</h3>
-                        <button class="form-btn" id="logout-btn" style="background: linear-gradient(135deg, #444, #666);">Logout</button>
+                        <button type="button" class="form-btn" id="logout-btn" style="background: linear-gradient(135deg, #444, #666);">Logout</button>
                     </div>
                 </div>
             </div>

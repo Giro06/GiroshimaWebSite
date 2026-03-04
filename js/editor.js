@@ -19,7 +19,13 @@
     }
 
     function saveGames(games) {
-        localStorage.setItem(GAMES_KEY, JSON.stringify(games));
+        try {
+            localStorage.setItem(GAMES_KEY, JSON.stringify(games));
+            return true;
+        } catch (e) {
+            showToast('Storage full! Try using smaller images.');
+            return false;
+        }
     }
 
     function getVideos() {
@@ -28,7 +34,13 @@
     }
 
     function saveVideos(videos) {
-        localStorage.setItem(VIDEOS_KEY, JSON.stringify(videos));
+        try {
+            localStorage.setItem(VIDEOS_KEY, JSON.stringify(videos));
+            return true;
+        } catch (e) {
+            showToast('Storage full! Try removing some items.');
+            return false;
+        }
     }
 
     function getPassword() {
@@ -206,6 +218,31 @@
 
     // ---- Image Upload ----
     let uploadedImageData = '';
+    let imageReady = true;
+
+    function compressImage(dataUrl, maxWidth, quality) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = () => resolve(dataUrl);
+            img.src = dataUrl;
+        });
+    }
 
     function initImageUpload() {
         const uploadArea = document.getElementById('image-upload-area');
@@ -220,16 +257,19 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            if (file.size > 2 * 1024 * 1024) {
-                showToast('Image must be under 2MB');
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image must be under 5MB');
                 return;
             }
 
+            imageReady = false;
             const reader = new FileReader();
-            reader.onload = (event) => {
-                uploadedImageData = event.target.result;
+            reader.onload = async (event) => {
+                const compressed = await compressImage(event.target.result, 400, 0.7);
+                uploadedImageData = compressed;
+                imageReady = true;
                 if (preview) {
-                    preview.src = uploadedImageData;
+                    preview.src = compressed;
                     preview.style.display = 'block';
                 }
                 if (placeholder) placeholder.style.display = 'none';
@@ -249,6 +289,11 @@
     }
 
     function addOrUpdateGame() {
+        if (!imageReady) {
+            showToast('Image is still processing, please wait...');
+            return;
+        }
+
         const title = document.getElementById('game-title').value.trim();
         const link = document.getElementById('game-link').value.trim();
         const video = document.getElementById('game-video').value.trim();
@@ -266,14 +311,14 @@
             games[editingIndex].link = link;
             games[editingIndex].video = video;
             games[editingIndex].image = uploadedImageData || games[editingIndex].image;
-            saveGames(games);
+            if (!saveGames(games)) return;
             clearForm();
             renderGamesList();
             showToast('Game updated!');
         } else {
             // Add new game
             games.push({ title, link, video, image: uploadedImageData, id: Date.now() });
-            saveGames(games);
+            if (!saveGames(games)) return;
             clearForm();
             renderGamesList();
             showToast('Game added!');
@@ -336,7 +381,7 @@
 
         const videos = getVideos();
         videos.push({ title, url, id: Date.now() });
-        saveVideos(videos);
+        if (!saveVideos(videos)) return;
 
         document.getElementById('video-title').value = '';
         document.getElementById('video-url').value = '';
@@ -474,6 +519,32 @@
         }
     }
 
+    // ---- Migrate old uncompressed images ----
+    async function migrateOldImages() {
+        const games = getGames();
+        let changed = false;
+
+        for (let i = 0; i < games.length; i++) {
+            const img = games[i].image;
+            // Skip if no image or already small (compressed images are typically under 100KB)
+            if (!img || img.length < 100000) continue;
+
+            try {
+                const compressed = await compressImage(img, 400, 0.7);
+                if (compressed.length < img.length) {
+                    games[i].image = compressed;
+                    changed = true;
+                }
+            } catch {
+                // Skip this image if compression fails
+            }
+        }
+
+        if (changed) {
+            saveGames(games);
+        }
+    }
+
     // ---- Init ----
     function init() {
         // 1. Setup all event listeners first
@@ -497,6 +568,9 @@
         if (isLoggedIn()) {
             showEditor();
         }
+
+        // 4. Compress old uncompressed images in background
+        migrateOldImages();
     }
 
     if (document.readyState === 'loading') {
