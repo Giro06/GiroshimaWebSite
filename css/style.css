@@ -614,6 +614,24 @@ img {
     color: var(--accent);
 }
 
+.footer-social {
+    display: flex;
+    gap: 16px;
+}
+
+.social-link {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.social-link:hover {
+    color: var(--accent);
+}
+
 .footer-bottom {
     text-align: center;
     padding-top: 24px;
