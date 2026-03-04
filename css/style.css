@@ -1191,72 +1191,68 @@ img {
 }
 
 /* ========================================
-   Floating 3D Game Elements
+   Astronaut Buddy
    ======================================== */
-.floating-elements {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-    perspective: 800px;
-}
-
-.float-el {
+#astro-buddy {
     position: absolute;
-    color: var(--accent);
-    opacity: 0.12;
-    transform-style: preserve-3d;
-    will-change: transform, opacity;
-    transition: opacity 0.3s;
-    animation: floatDrift 12s ease-in-out infinite alternate;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    will-change: transform;
 }
 
-.float-el:nth-child(2n) {
-    animation-duration: 16s;
-    animation-delay: -3s;
+#astro-buddy .astro-svg {
+    display: block;
+    filter: drop-shadow(0 4px 12px rgba(233, 69, 96, 0.25));
 }
 
-.float-el:nth-child(3n) {
-    animation-duration: 20s;
-    animation-delay: -7s;
+/* Antenna pulse */
+#astro-buddy .astro-antenna {
+    animation: antennaPulse 1.5s ease-in-out infinite;
 }
 
-.float-el:nth-child(4n+1) {
-    animation-duration: 14s;
-    animation-delay: -5s;
+@keyframes antennaPulse {
+    0%, 100% { r: 4; opacity: 1; }
+    50% { r: 5.5; opacity: 0.7; }
 }
 
-@keyframes floatDrift {
-    0% {
-        transform: translateY(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-    }
-    25% {
-        transform: translateY(-20px) rotateX(15deg) rotateY(-10deg) rotateZ(5deg);
-    }
-    50% {
-        transform: translateY(-35px) rotateX(-10deg) rotateY(20deg) rotateZ(-8deg);
-    }
-    75% {
-        transform: translateY(-15px) rotateX(20deg) rotateY(-15deg) rotateZ(12deg);
-    }
-    100% {
-        transform: translateY(-30px) rotateX(-15deg) rotateY(25deg) rotateZ(-5deg);
-    }
+/* Celebrate bounce */
+#astro-buddy.celebrating .astro-svg {
+    animation: celebrateBounce 0.3s ease-in-out infinite alternate;
 }
 
-/* Hover proximity glow - handled by JS */
-.float-el.near-mouse {
-    opacity: 0.35;
-    filter: drop-shadow(0 0 8px var(--accent));
+@keyframes celebrateBounce {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-8px) scale(1.08); }
 }
 
-@media (max-width: 768px) {
-    .float-el {
-        opacity: 0.08;
-    }
-    .float-el svg {
-        width: 28px;
-        height: 28px;
+/* Emote bubble */
+#astro-buddy .astro-emote {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--accent);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+    pointer-events: none;
+}
+
+#astro-buddy .astro-emote.show {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+}
+
+@media (max-width: 480px) {
+    #astro-buddy {
+        display: none;
     }
 }
