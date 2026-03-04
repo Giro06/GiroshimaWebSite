@@ -9,12 +9,46 @@
     const GAMES_KEY = 'giroshima_games';
     const VIDEOS_KEY = 'giroshima_videos';
 
+    // ---- Default Games (from old site) ----
+    const DEFAULT_GAMES = [
+        {
+            id: 1,
+            title: 'Candy Block Jam',
+            description: 'A sweet and addictive block puzzle game. Match and clear candy blocks!',
+            link: 'https://www.crazygames.com/game/candyblockjam',
+            image: ''
+        },
+        {
+            id: 2,
+            title: 'Polyline',
+            description: 'Connect the dots and create beautiful polyline patterns.',
+            link: 'https://giroshima.itch.io/polyline',
+            image: ''
+        },
+        {
+            id: 3,
+            title: 'Sort Shelf',
+            description: 'Organize and sort items on the shelf in this relaxing puzzle game.',
+            link: 'https://giroshima.itch.io/sort-shelf',
+            image: ''
+        },
+        {
+            id: 4,
+            title: 'Meow Match 3',
+            description: 'A cute cat-themed match-3 puzzle game. Match adorable cats!',
+            link: 'https://giroshima.itch.io/meow-match-3',
+            image: ''
+        }
+    ];
+
     // ---- Helpers ----
     function getGames() {
         try {
-            return JSON.parse(localStorage.getItem(GAMES_KEY)) || [];
+            const stored = JSON.parse(localStorage.getItem(GAMES_KEY));
+            if (stored && stored.length > 0) return stored;
+            return DEFAULT_GAMES;
         } catch {
-            return [];
+            return DEFAULT_GAMES;
         }
     }
 
