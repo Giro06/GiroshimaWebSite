@@ -84,8 +84,8 @@
 
         cats.push({
             el,
-            x: 100 + Math.random() * (window.innerWidth - 200),
-            y: 100 + Math.random() * (window.innerHeight - 200),
+            x: 100 + Math.random() * (window.innerWidth - 200) + window.scrollX,
+            y: 100 + Math.random() * (window.innerHeight - 200) + window.scrollY,
             vx: (Math.random() - 0.5) * 2,
             vy: (Math.random() - 0.5) * 2,
             angryTimer: 0,
@@ -98,8 +98,8 @@
     let mouseX = -999, mouseY = -999;
 
     window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        mouseX = e.pageX;
+        mouseY = e.pageY;
     });
 
     // --- Emote helper ---
@@ -175,9 +175,9 @@
             cat.x += cat.vx;
             cat.y += cat.vy;
 
-            // Viewport boundaries
-            const w = window.innerWidth;
-            const h = window.innerHeight;
+            // Page boundaries (absolute positioning - include scroll)
+            const w = document.documentElement.scrollWidth;
+            const h = document.documentElement.scrollHeight;
             if (cat.x < 22) { cat.x = 22; cat.vx *= -0.5; cat.idleAngle = Math.random() * Math.PI * 2; }
             if (cat.x > w - 22) { cat.x = w - 22; cat.vx *= -0.5; cat.idleAngle = Math.random() * Math.PI * 2; }
             if (cat.y < 22) { cat.y = 22; cat.vy *= -0.5; cat.idleAngle = Math.random() * Math.PI * 2; }

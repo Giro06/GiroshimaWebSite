@@ -1194,7 +1194,7 @@ img {
    Astronaut Buddy
    ======================================== */
 #astro-buddy {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: 9999;
@@ -1255,7 +1255,7 @@ img {
    Space Cats
    ======================================== */
 .space-cat {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: 9998;

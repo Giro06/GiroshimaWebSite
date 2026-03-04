@@ -59,12 +59,12 @@
 
     // --- State ---
     const state = {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
+        x: window.innerWidth / 2 + window.scrollX,
+        y: window.innerHeight / 2 + window.scrollY,
         vx: 0,
         vy: 0,
-        mouseX: window.innerWidth / 2,
-        mouseY: window.innerHeight / 2,
+        mouseX: window.innerWidth / 2 + window.scrollX,
+        mouseY: window.innerHeight / 2 + window.scrollY,
         mode: 'chase',       // 'chase' | 'wander' | 'celebrate'
         wanderAngle: Math.random() * Math.PI * 2,
         wanderTimer: 0,
@@ -79,10 +79,10 @@
     const CATCH_RADIUS = 40;
     const FRICTION = 0.92;
 
-    // --- Mouse tracking (viewport coords for position:fixed) ---
+    // --- Mouse tracking (page coords for position:absolute) ---
     window.addEventListener('mousemove', (e) => {
-        state.mouseX = e.clientX;
-        state.mouseY = e.clientY;
+        state.mouseX = e.pageX;
+        state.mouseY = e.pageY;
         state.mouseMovedAt = Date.now();
 
         if (state.mode === 'wander') {
@@ -181,9 +181,9 @@
         state.x += state.vx;
         state.y += state.vy;
 
-        // Viewport boundaries (fixed positioning)
-        const pageW = window.innerWidth;
-        const pageH = window.innerHeight;
+        // Page boundaries (absolute positioning)
+        const pageW = document.documentElement.scrollWidth;
+        const pageH = document.documentElement.scrollHeight;
 
         if (state.x < 30) { state.x = 30; state.vx *= -0.5; state.wanderAngle = Math.random() * Math.PI * 2; }
         if (state.x > pageW - 30) { state.x = pageW - 30; state.vx *= -0.5; state.wanderAngle = Math.random() * Math.PI * 2; }
