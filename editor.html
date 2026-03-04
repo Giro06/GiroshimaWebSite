@@ -69,16 +69,19 @@
                             <input type="text" id="game-title" placeholder="Enter game title">
                         </div>
                         <div class="form-group">
-                            <label for="game-desc">Description</label>
-                            <textarea id="game-desc" placeholder="Short description of the game"></textarea>
-                        </div>
-                        <div class="form-group">
                             <label for="game-link">Game Link (URL)</label>
                             <input type="url" id="game-link" placeholder="https://play.google.com/store/apps/...">
                         </div>
                         <div class="form-group">
-                            <label for="game-image">Image URL</label>
-                            <input type="url" id="game-image" placeholder="https://example.com/game-image.jpg">
+                            <label for="game-image">Game Image</label>
+                            <div class="image-upload-area" id="image-upload-area">
+                                <input type="file" id="game-image" accept="image/*" style="display:none;">
+                                <div class="upload-placeholder" id="upload-placeholder">
+                                    <span style="font-size:2rem;">&#128247;</span>
+                                    <span>Click to upload image</span>
+                                </div>
+                                <img id="image-preview" class="image-preview" style="display:none;" alt="Preview">
+                            </div>
                         </div>
                         <button class="form-btn" id="add-game-btn">Add Game</button>
                     </div>

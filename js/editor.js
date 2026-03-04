@@ -140,11 +140,51 @@
         `).join('');
     }
 
+    // ---- Image Upload ----
+    let uploadedImageData = '';
+
+    function initImageUpload() {
+        const uploadArea = document.getElementById('image-upload-area');
+        const fileInput = document.getElementById('game-image');
+        const preview = document.getElementById('image-preview');
+        const placeholder = document.getElementById('upload-placeholder');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image must be under 2MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                uploadedImageData = event.target.result;
+                preview.src = uploadedImageData;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function clearImageUpload() {
+        uploadedImageData = '';
+        const preview = document.getElementById('image-preview');
+        const placeholder = document.getElementById('upload-placeholder');
+        const fileInput = document.getElementById('game-image');
+        preview.style.display = 'none';
+        preview.src = '';
+        placeholder.style.display = '';
+        fileInput.value = '';
+    }
+
     function addGame() {
         const title = document.getElementById('game-title').value.trim();
-        const desc = document.getElementById('game-desc').value.trim();
         const link = document.getElementById('game-link').value.trim();
-        const image = document.getElementById('game-image').value.trim();
 
         if (!title) {
             showToast('Game title is required!');
@@ -152,14 +192,13 @@
         }
 
         const games = getGames();
-        games.push({ title, description: desc, link, image, id: Date.now() });
+        games.push({ title, link, image: uploadedImageData, id: Date.now() });
         saveGames(games);
 
         // Clear form
         document.getElementById('game-title').value = '';
-        document.getElementById('game-desc').value = '';
         document.getElementById('game-link').value = '';
-        document.getElementById('game-image').value = '';
+        clearImageUpload();
 
         renderGamesList();
         showToast('Game added!');
@@ -355,6 +394,7 @@
 
         document.getElementById('add-game-btn').addEventListener('click', addGame);
         document.getElementById('add-video-btn').addEventListener('click', addVideo);
+        initImageUpload();
     }
 
     if (document.readyState === 'loading') {
