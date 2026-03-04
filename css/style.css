@@ -226,7 +226,7 @@ img {
 }
 
 .title-line {
-    display: block;
+    display: inline-block;
     opacity: 0;
     animation: slideUp 0.8s ease forwards;
 }
