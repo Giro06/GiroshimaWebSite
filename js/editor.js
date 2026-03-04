@@ -519,6 +519,32 @@
         }
     }
 
+    // ---- Migrate old uncompressed images ----
+    async function migrateOldImages() {
+        const games = getGames();
+        let changed = false;
+
+        for (let i = 0; i < games.length; i++) {
+            const img = games[i].image;
+            // Skip if no image or already small (compressed images are typically under 100KB)
+            if (!img || img.length < 100000) continue;
+
+            try {
+                const compressed = await compressImage(img, 400, 0.7);
+                if (compressed.length < img.length) {
+                    games[i].image = compressed;
+                    changed = true;
+                }
+            } catch {
+                // Skip this image if compression fails
+            }
+        }
+
+        if (changed) {
+            saveGames(games);
+        }
+    }
+
     // ---- Init ----
     function init() {
         // 1. Setup all event listeners first
@@ -542,6 +568,9 @@
         if (isLoggedIn()) {
             showEditor();
         }
+
+        // 4. Compress old uncompressed images in background
+        migrateOldImages();
     }
 
     if (document.readyState === 'loading') {
