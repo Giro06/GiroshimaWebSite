@@ -1194,7 +1194,7 @@ img {
    Astronaut Buddy
    ======================================== */
 #astro-buddy {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 9999;
@@ -1251,8 +1251,71 @@ img {
     opacity: 1;
 }
 
+/* ========================================
+   Space Cats
+   ======================================== */
+.space-cat {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9998;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.space-cat .cat-svg {
+    display: block;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Tail wag */
+.space-cat .cat-tail {
+    animation: tailWag var(--wag-speed, 0.5s) ease-in-out infinite alternate;
+    transform-origin: 20px 55px;
+}
+
+@keyframes tailWag {
+    0% { transform: rotate(-15deg); }
+    100% { transform: rotate(15deg); }
+}
+
+/* Angry shake */
+.space-cat.cat-angry .cat-svg {
+    animation: catShake 0.1s ease-in-out infinite alternate;
+}
+
+@keyframes catShake {
+    0% { transform: translateX(-2px) rotate(-2deg); }
+    100% { transform: translateX(2px) rotate(2deg); }
+}
+
+/* Cat emote bubble */
+.space-cat .cat-emote {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: #ff6b6b;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s;
+    pointer-events: none;
+}
+
+.space-cat .cat-emote.show {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+}
+
 @media (max-width: 480px) {
-    #astro-buddy {
+    #astro-buddy,
+    .space-cat {
         display: none;
     }
 }

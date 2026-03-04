@@ -9,7 +9,7 @@
     const ctx = canvas.getContext('2d');
     let particles = [];
     let animationId;
-    const PARTICLE_COUNT = 60;
+    const PARTICLE_COUNT = 150;
     const CONNECTION_DISTANCE = 120;
     const MOUSE_RADIUS = 150;
 

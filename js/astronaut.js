@@ -79,10 +79,10 @@
     const CATCH_RADIUS = 40;
     const FRICTION = 0.92;
 
-    // --- Mouse tracking ---
+    // --- Mouse tracking (viewport coords for position:fixed) ---
     window.addEventListener('mousemove', (e) => {
-        state.mouseX = e.clientX + window.scrollX;
-        state.mouseY = e.clientY + window.scrollY;
+        state.mouseX = e.clientX;
+        state.mouseY = e.clientY;
         state.mouseMovedAt = Date.now();
 
         if (state.mode === 'wander') {
@@ -181,9 +181,9 @@
         state.x += state.vx;
         state.y += state.vy;
 
-        // Page boundaries
-        const pageW = Math.max(document.body.scrollWidth, window.innerWidth);
-        const pageH = Math.max(document.body.scrollHeight, window.innerHeight);
+        // Viewport boundaries (fixed positioning)
+        const pageW = window.innerWidth;
+        const pageH = window.innerHeight;
 
         if (state.x < 30) { state.x = 30; state.vx *= -0.5; state.wanderAngle = Math.random() * Math.PI * 2; }
         if (state.x > pageW - 30) { state.x = pageW - 30; state.vx *= -0.5; state.wanderAngle = Math.random() * Math.PI * 2; }
