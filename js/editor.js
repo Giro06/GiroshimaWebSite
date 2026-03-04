@@ -147,7 +147,7 @@
     function setFormMode(mode) {
         const btn = document.getElementById('add-game-btn');
         const cancelBtn = document.getElementById('cancel-edit-btn');
-        const formTitle = document.querySelector('.add-form h3');
+        const formTitle = document.querySelector('#games-tab .add-form h3');
         if (mode === 'edit') {
             btn.textContent = 'Update Game';
             cancelBtn.style.display = 'inline-block';
