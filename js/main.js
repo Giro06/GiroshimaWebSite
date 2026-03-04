@@ -93,18 +93,18 @@
         if (empty) empty.classList.remove('visible');
 
         grid.innerHTML = games.map((game, i) => `
-            <div class="game-card" style="animation-delay: ${i * 0.1}s">
+            <a href="${game.link ? escapeHtml(game.link) : '#'}" target="_blank" rel="noopener noreferrer" class="game-card" style="animation-delay: ${i * 0.1}s">
                 <div class="game-card-image">
                     ${game.image
                         ? `<img src="${escapeHtml(game.image)}" alt="${escapeHtml(game.title)}" loading="lazy">`
                         : `<div class="game-card-placeholder">&#127918;</div>`
                     }
                 </div>
-                <div class="game-card-body">
+                <div class="game-card-overlay">
                     <h3 class="game-card-title">${escapeHtml(game.title)}</h3>
-                    ${game.link ? `<a href="${escapeHtml(game.link)}" target="_blank" rel="noopener noreferrer" class="game-card-link">Play Now</a>` : ''}
+                    <span class="game-card-btn">Play Now</span>
                 </div>
-            </div>
+            </a>
         `).join('');
     }
 
