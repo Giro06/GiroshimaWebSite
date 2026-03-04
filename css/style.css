@@ -508,7 +508,7 @@ img {
     transform: translateY(0);
 }
 
-/* Hover Video */
+/* Hover Video – cinematic reveal */
 .game-card-video {
     position: absolute;
     top: 0;
@@ -517,13 +517,32 @@ img {
     height: 100%;
     z-index: 2;
     opacity: 0;
-    transition: opacity 0.4s ease;
     pointer-events: none;
     background: #000;
+    clip-path: circle(0% at 50% 50%);
+    transition: clip-path 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.3s ease;
 }
 
 .game-card-video.active {
     opacity: 1;
+    clip-path: circle(150% at 50% 50%);
+}
+
+/* Glow ring while video loads */
+.game-card-video.active::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--radius-lg);
+    background: conic-gradient(from 0deg, transparent, var(--accent), transparent);
+    animation: videoGlowSpin 1.5s linear infinite;
+    opacity: 0.4;
+    z-index: -1;
+}
+
+@keyframes videoGlowSpin {
+    to { transform: rotate(360deg); }
 }
 
 .game-card-video iframe {

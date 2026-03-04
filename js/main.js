@@ -115,28 +115,42 @@
             </a>
         `}).join('');
 
-        // Hover video logic
+        // Hover video logic – reveal from mouse position
         grid.querySelectorAll('.game-card[data-video]').forEach(card => {
             let hoverTimeout;
-            card.addEventListener('mouseenter', () => {
+            card.addEventListener('mouseenter', (e) => {
+                const rect = card.getBoundingClientRect();
+                const px = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+                const py = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+
                 hoverTimeout = setTimeout(() => {
                     const videoContainer = card.querySelector('.game-card-video');
                     if (videoContainer && !videoContainer.querySelector('iframe')) {
+                        // Set clip-path origin to mouse entry point
+                        videoContainer.style.clipPath = `circle(0% at ${px}% ${py}%)`;
                         const iframe = document.createElement('iframe');
                         iframe.src = card.dataset.video + '?autoplay=1&mute=1&controls=0&loop=1&playsinline=1';
                         iframe.allow = 'autoplay; encrypted-media';
                         iframe.setAttribute('loading', 'lazy');
                         videoContainer.appendChild(iframe);
+                        // Trigger reflow then animate open
+                        void videoContainer.offsetWidth;
+                        videoContainer.style.clipPath = `circle(150% at ${px}% ${py}%)`;
                         videoContainer.classList.add('active');
                     }
                 }, 400);
             });
-            card.addEventListener('mouseleave', () => {
+            card.addEventListener('mouseleave', (e) => {
                 clearTimeout(hoverTimeout);
                 const videoContainer = card.querySelector('.game-card-video');
                 if (videoContainer) {
+                    const rect = card.getBoundingClientRect();
+                    const px = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+                    const py = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+                    // Close toward mouse exit point
+                    videoContainer.style.clipPath = `circle(0% at ${px}% ${py}%)`;
                     videoContainer.classList.remove('active');
-                    videoContainer.innerHTML = '';
+                    setTimeout(() => { videoContainer.innerHTML = ''; videoContainer.style.clipPath = ''; }, 500);
                 }
             });
         });
