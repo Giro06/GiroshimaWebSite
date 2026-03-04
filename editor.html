@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor - Giroshima</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">&#9670;</span>
+                <span class="logo-text">GIROSHIMA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#games" class="nav-link">Games</a></li>
+                <li><a href="index.html#videos" class="nav-link">Videos</a></li>
+                <li><a href="terms.html" class="nav-link">Terms</a></li>
+                <li><a href="privacy.html" class="nav-link">Privacy</a></li>
+            </ul>
+            <button class="mobile-menu-btn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="editor-page">
+        <div class="editor-container">
+            <div class="editor-header">
+                <h1>Content Editor</h1>
+                <p>Manage your games and videos</p>
+            </div>
+
+            <!-- Login Section -->
+            <div class="login-section" id="login-section">
+                <h2>Admin Login</h2>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" placeholder="Enter admin password">
+                </div>
+                <button class="form-btn" id="login-btn">Login</button>
+                <p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-top:16px;">
+                    First time? Default password: <code style="color:var(--accent);">giroshima2026</code>
+                </p>
+            </div>
+
+            <!-- Editor Panel (hidden until login) -->
+            <div class="editor-panel" id="editor-panel">
+                <!-- Tabs -->
+                <div class="editor-tabs">
+                    <button class="editor-tab active" data-tab="games-tab">Games</button>
+                    <button class="editor-tab" data-tab="videos-tab">Videos</button>
+                    <button class="editor-tab" data-tab="settings-tab">Settings</button>
+                </div>
+
+                <!-- Games Tab -->
+                <div class="tab-content active" id="games-tab">
+                    <div class="add-form">
+                        <h3>Add New Game</h3>
+                        <div class="form-group">
+                            <label for="game-title">Game Title *</label>
+                            <input type="text" id="game-title" placeholder="Enter game title">
+                        </div>
+                        <div class="form-group">
+                            <label for="game-desc">Description</label>
+                            <textarea id="game-desc" placeholder="Short description of the game"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="game-link">Game Link (URL)</label>
+                            <input type="url" id="game-link" placeholder="https://play.google.com/store/apps/...">
+                        </div>
+                        <div class="form-group">
+                            <label for="game-image">Image URL</label>
+                            <input type="url" id="game-image" placeholder="https://example.com/game-image.jpg">
+                        </div>
+                        <button class="form-btn" id="add-game-btn">Add Game</button>
+                    </div>
+
+                    <h3 style="font-family:var(--font-display); font-size:1rem; margin-bottom:16px; color:var(--text-secondary);">Your Games</h3>
+                    <div class="items-list" id="games-list">
+                        <!-- Games list rendered here -->
+                    </div>
+                </div>
+
+                <!-- Videos Tab -->
+                <div class="tab-content" id="videos-tab">
+                    <div class="add-form">
+                        <h3>Add New Video</h3>
+                        <div class="form-group">
+                            <label for="video-title">Video Title *</label>
+                            <input type="text" id="video-title" placeholder="Enter video title">
+                        </div>
+                        <div class="form-group">
+                            <label for="video-url">YouTube URL *</label>
+                            <input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        <button class="form-btn" id="add-video-btn">Add Video</button>
+                    </div>
+
+                    <h3 style="font-family:var(--font-display); font-size:1rem; margin-bottom:16px; color:var(--text-secondary);">Your Videos</h3>
+                    <div class="items-list" id="videos-list">
+                        <!-- Videos list rendered here -->
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-content" id="settings-tab">
+                    <div class="add-form">
+                        <h3>Change Password</h3>
+                        <div class="form-group">
+                            <label for="current-pw">Current Password</label>
+                            <input type="password" id="current-pw" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-pw">New Password</label>
+                            <input type="password" id="new-pw" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-pw">Confirm New Password</label>
+                            <input type="password" id="confirm-pw" placeholder="Confirm new password">
+                        </div>
+                        <button class="form-btn" id="change-pw-btn">Update Password</button>
+                    </div>
+
+                    <div class="add-form" style="margin-top: 24px;">
+                        <h3>Data Management</h3>
+                        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">Export or import your content data as JSON.</p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <button class="form-btn" id="export-btn" style="flex:1; min-width:150px;">Export Data</button>
+                            <button class="form-btn" id="import-btn" style="flex:1; min-width:150px; background:var(--accent-secondary);">Import Data</button>
+                        </div>
+                        <input type="file" id="import-file" accept=".json" style="display:none;">
+                    </div>
+
+                    <div class="add-form" style="margin-top: 24px;">
+                        <h3>Logout</h3>
+                        <button class="form-btn" id="logout-btn" style="background: linear-gradient(135deg, #444, #666);">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/particles.js"></script>
+    <script src="js/editor.js"></script>
+</body>
+</html>

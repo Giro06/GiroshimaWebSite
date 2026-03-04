@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giroshima - Games</title>
+    <meta name="description" content="Giroshima - Discover amazing indie games">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated background particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">&#9670;</span>
+                <span class="logo-text">GIROSHIMA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#games" class="nav-link active">Games</a></li>
+                <li><a href="#videos" class="nav-link">Videos</a></li>
+                <li><a href="terms.html" class="nav-link">Terms</a></li>
+                <li><a href="privacy.html" class="nav-link">Privacy</a></li>
+            </ul>
+            <button class="mobile-menu-btn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-line">GIRO</span>
+                <span class="title-line accent">SHIMA</span>
+            </h1>
+            <p class="hero-subtitle">Indie Game Studio</p>
+            <div class="hero-cta">
+                <a href="#games" class="btn btn-primary">Explore Games</a>
+            </div>
+        </div>
+        <div class="hero-glow"></div>
+    </header>
+
+    <!-- Games Section -->
+    <section id="games" class="section games-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-decoration"></span>
+                Our Games
+                <span class="title-decoration"></span>
+            </h2>
+            <p class="section-subtitle">Check out our latest creations</p>
+            <div class="games-grid" id="games-grid">
+                <!-- Games will be loaded dynamically from localStorage -->
+            </div>
+            <div class="empty-state" id="games-empty">
+                <div class="empty-icon">&#127918;</div>
+                <p>Games coming soon! Stay tuned.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Videos Section -->
+    <section id="videos" class="section videos-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-decoration"></span>
+                Videos
+                <span class="title-decoration"></span>
+            </h2>
+            <p class="section-subtitle">Gameplay trailers and devlogs</p>
+            <div class="videos-grid" id="videos-grid">
+                <!-- Videos will be loaded dynamically from localStorage -->
+            </div>
+            <div class="empty-state" id="videos-empty">
+                <div class="empty-icon">&#127916;</div>
+                <p>Videos coming soon! Stay tuned.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">&#9670;</span>
+                    <span class="logo-text">GIROSHIMA</span>
+                </div>
+                <div class="footer-links">
+                    <a href="terms.html">Terms of Use</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Giroshima. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/particles.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
