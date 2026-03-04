@@ -542,7 +542,9 @@ img {
 .videos-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 28px;
+    gap: 32px;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .video-card {
@@ -582,12 +584,12 @@ img {
 }
 
 .video-card-body {
-    padding: 20px;
+    padding: 16px 20px;
 }
 
 .video-card-title {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
 }
 
