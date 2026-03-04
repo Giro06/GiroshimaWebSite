@@ -62,10 +62,15 @@
         let videoId = null;
         try {
             const urlObj = new URL(url);
-            if (urlObj.hostname.includes('youtube.com')) {
+            if (urlObj.hostname.includes('youtu.be')) {
+                videoId = urlObj.pathname.slice(1).split('/')[0];
+            } else if (urlObj.hostname.includes('youtube.com')) {
                 videoId = urlObj.searchParams.get('v');
-            } else if (urlObj.hostname.includes('youtu.be')) {
-                videoId = urlObj.pathname.slice(1);
+                if (!videoId) {
+                    // Handle /embed/ID, /shorts/ID, /live/ID, /v/ID formats
+                    const match = urlObj.pathname.match(/\/(embed|shorts|live|v)\/([^/?]+)/);
+                    if (match) videoId = match[2];
+                }
             }
         } catch {
             return null;
