@@ -10,6 +10,7 @@
     const PASSWORD_KEY = 'giroshima_admin_pw';
     const SESSION_KEY = 'giroshima_session';
     const DEFAULT_PASSWORD = 'giroshima2026';
+    const VIDEOS_KEY = 'giroshima_videos';
 
     // ---- Helpers ----
     function getGames() {
@@ -20,8 +21,6 @@
     function saveGames(games) {
         localStorage.setItem(GAMES_KEY, JSON.stringify(games));
     }
-
-    const VIDEOS_KEY = 'giroshima_videos';
 
     function getVideos() {
         try { return JSON.parse(localStorage.getItem(VIDEOS_KEY)) || []; }
@@ -58,16 +57,20 @@
 
     // ---- Auth ----
     function showEditor() {
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('editor-panel').classList.add('active');
+        const loginSection = document.getElementById('login-section');
+        const editorPanel = document.getElementById('editor-panel');
+        if (loginSection) loginSection.style.display = 'none';
+        if (editorPanel) editorPanel.classList.add('active');
         sessionStorage.setItem(SESSION_KEY, 'true');
         renderGamesList();
         renderVideosList();
     }
 
     function hideEditor() {
-        document.getElementById('login-section').style.display = '';
-        document.getElementById('editor-panel').classList.remove('active');
+        const loginSection = document.getElementById('login-section');
+        const editorPanel = document.getElementById('editor-panel');
+        if (loginSection) loginSection.style.display = '';
+        if (editorPanel) editorPanel.classList.remove('active');
         sessionStorage.removeItem(SESSION_KEY);
     }
 
@@ -75,10 +78,7 @@
     function initLogin() {
         const loginBtn = document.getElementById('login-btn');
         const passwordInput = document.getElementById('admin-password');
-
-        if (isLoggedIn()) {
-            showEditor();
-        }
+        if (!loginBtn || !passwordInput) return;
 
         loginBtn.addEventListener('click', () => {
             const pw = passwordInput.value;
@@ -107,7 +107,8 @@
                 tabs.forEach(t => t.classList.remove('active'));
                 contents.forEach(c => c.classList.remove('active'));
                 tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) target.classList.add('active');
             });
         });
     }
@@ -117,6 +118,7 @@
 
     function renderGamesList() {
         const list = document.getElementById('games-list');
+        if (!list) return;
         const games = getGames();
 
         if (games.length === 0) {
@@ -148,6 +150,7 @@
         const btn = document.getElementById('add-game-btn');
         const cancelBtn = document.getElementById('cancel-edit-btn');
         const formTitle = document.querySelector('#games-tab .add-form h3');
+        if (!btn || !cancelBtn || !formTitle) return;
         if (mode === 'edit') {
             btn.textContent = 'Update Game';
             cancelBtn.style.display = 'inline-block';
@@ -184,9 +187,11 @@
             uploadedImageData = game.image;
             const preview = document.getElementById('image-preview');
             const placeholder = document.getElementById('upload-placeholder');
-            preview.src = game.image;
-            preview.style.display = 'block';
-            placeholder.style.display = 'none';
+            if (preview) {
+                preview.src = game.image;
+                preview.style.display = 'block';
+            }
+            if (placeholder) placeholder.style.display = 'none';
         } else {
             clearImageUpload();
         }
@@ -194,8 +199,9 @@
         setFormMode('edit');
         renderGamesList();
 
-        // Scroll to form
-        document.querySelector('.add-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Scroll to games form
+        const gamesForm = document.querySelector('#games-tab .add-form');
+        if (gamesForm) gamesForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     // ---- Image Upload ----
@@ -206,6 +212,7 @@
         const fileInput = document.getElementById('game-image');
         const preview = document.getElementById('image-preview');
         const placeholder = document.getElementById('upload-placeholder');
+        if (!uploadArea || !fileInput) return;
 
         uploadArea.addEventListener('click', () => fileInput.click());
 
@@ -221,9 +228,11 @@
             const reader = new FileReader();
             reader.onload = (event) => {
                 uploadedImageData = event.target.result;
-                preview.src = uploadedImageData;
-                preview.style.display = 'block';
-                placeholder.style.display = 'none';
+                if (preview) {
+                    preview.src = uploadedImageData;
+                    preview.style.display = 'block';
+                }
+                if (placeholder) placeholder.style.display = 'none';
             };
             reader.readAsDataURL(file);
         });
@@ -234,10 +243,9 @@
         const preview = document.getElementById('image-preview');
         const placeholder = document.getElementById('upload-placeholder');
         const fileInput = document.getElementById('game-image');
-        preview.style.display = 'none';
-        preview.src = '';
-        placeholder.style.display = '';
-        fileInput.value = '';
+        if (preview) { preview.style.display = 'none'; preview.src = ''; }
+        if (placeholder) placeholder.style.display = '';
+        if (fileInput) fileInput.value = '';
     }
 
     function addOrUpdateGame() {
@@ -293,6 +301,7 @@
     // ---- Videos CRUD ----
     function renderVideosList() {
         const list = document.getElementById('videos-list');
+        if (!list) return;
         const videos = getVideos();
 
         if (videos.length === 0) {
@@ -356,92 +365,104 @@
 
     // ---- Settings ----
     function initSettings() {
-        // Change password
-        document.getElementById('change-pw-btn').addEventListener('click', () => {
-            const current = document.getElementById('current-pw').value;
-            const newPw = document.getElementById('new-pw').value;
-            const confirm = document.getElementById('confirm-pw').value;
+        const changePwBtn = document.getElementById('change-pw-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const importBtn = document.getElementById('import-btn');
+        const importFile = document.getElementById('import-file');
 
-            if (current !== getPassword()) {
-                showToast('Current password is wrong!');
-                return;
-            }
-            if (newPw.length < 4) {
-                showToast('Password must be at least 4 characters');
-                return;
-            }
-            if (newPw !== confirm) {
-                showToast('Passwords do not match!');
-                return;
-            }
+        if (changePwBtn) {
+            changePwBtn.addEventListener('click', () => {
+                const currentPw = document.getElementById('current-pw').value;
+                const newPw = document.getElementById('new-pw').value;
+                const confirmPw = document.getElementById('confirm-pw').value;
 
-            localStorage.setItem(PASSWORD_KEY, newPw);
-            document.getElementById('current-pw').value = '';
-            document.getElementById('new-pw').value = '';
-            document.getElementById('confirm-pw').value = '';
-            showToast('Password updated!');
-        });
-
-        // Logout
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            hideEditor();
-            showToast('Logged out');
-        });
-
-        // Export
-        document.getElementById('export-btn').addEventListener('click', () => {
-            const data = {
-                games: getGames(),
-                videos: getVideos(),
-                exportedAt: new Date().toISOString()
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `giroshima-backup-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('Data exported!');
-        });
-
-        // Import
-        document.getElementById('import-btn').addEventListener('click', () => {
-            document.getElementById('import-file').click();
-        });
-
-        document.getElementById('import-file').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const data = JSON.parse(event.target.result);
-                    if (data.games && Array.isArray(data.games)) {
-                        saveGames(data.games);
-                    }
-                    if (data.videos && Array.isArray(data.videos)) {
-                        saveVideos(data.videos);
-                    }
-                    renderGamesList();
-                    renderVideosList();
-                    showToast('Data imported successfully!');
-                } catch {
-                    showToast('Invalid file format!');
+                if (currentPw !== getPassword()) {
+                    showToast('Current password is wrong!');
+                    return;
                 }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        });
+                if (newPw.length < 4) {
+                    showToast('Password must be at least 4 characters');
+                    return;
+                }
+                if (newPw !== confirmPw) {
+                    showToast('Passwords do not match!');
+                    return;
+                }
+
+                localStorage.setItem(PASSWORD_KEY, newPw);
+                document.getElementById('current-pw').value = '';
+                document.getElementById('new-pw').value = '';
+                document.getElementById('confirm-pw').value = '';
+                showToast('Password updated!');
+            });
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                hideEditor();
+                showToast('Logged out');
+            });
+        }
+
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                const data = {
+                    games: getGames(),
+                    videos: getVideos(),
+                    exportedAt: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `giroshima-backup-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Data exported!');
+            });
+        }
+
+        if (importBtn && importFile) {
+            importBtn.addEventListener('click', () => {
+                importFile.click();
+            });
+
+            importFile.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (data.games && Array.isArray(data.games)) {
+                            saveGames(data.games);
+                        }
+                        if (data.videos && Array.isArray(data.videos)) {
+                            saveVideos(data.videos);
+                        }
+                        renderGamesList();
+                        renderVideosList();
+                        showToast('Data imported successfully!');
+                    } catch {
+                        showToast('Invalid file format!');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            });
+        }
     }
 
     // ---- Navbar ----
     function initNavbar() {
         const navbar = document.querySelector('.navbar');
-        window.addEventListener('scroll', () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 50);
-        });
+        if (navbar) {
+            window.addEventListener('scroll', () => {
+                navbar.classList.toggle('scrolled', window.scrollY > 50);
+            });
+        }
 
         const menuBtn = document.querySelector('.mobile-menu-btn');
         const navLinks = document.querySelector('.nav-links');
@@ -455,15 +476,27 @@
 
     // ---- Init ----
     function init() {
+        // 1. Setup all event listeners first
         initNavbar();
-        initLogin();
         initTabs();
         initSettings();
-
-        document.getElementById('add-game-btn').addEventListener('click', addOrUpdateGame);
-        document.getElementById('cancel-edit-btn').addEventListener('click', clearForm);
-        document.getElementById('add-video-btn').addEventListener('click', addVideo);
         initImageUpload();
+
+        const addGameBtn = document.getElementById('add-game-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const addVideoBtn = document.getElementById('add-video-btn');
+
+        if (addGameBtn) addGameBtn.addEventListener('click', addOrUpdateGame);
+        if (cancelEditBtn) cancelEditBtn.addEventListener('click', clearForm);
+        if (addVideoBtn) addVideoBtn.addEventListener('click', addVideo);
+
+        // 2. Setup login (may trigger showEditor which renders lists)
+        initLogin();
+
+        // 3. Auto-login if session exists
+        if (isLoggedIn()) {
+            showEditor();
+        }
     }
 
     if (document.readyState === 'loading') {
