@@ -9,57 +9,39 @@
     const GAMES_KEY = 'giroshima_games';
     const VIDEOS_KEY = 'giroshima_videos';
 
-    // ---- Default Games ----
-    const DEFAULT_GAMES = [
-        {
-            id: 1,
-            title: '6 Sudoku',
-            link: '',
-            image: 'images/games/6-sudoku.png'
-        },
-        {
-            id: 2,
-            title: 'Candy Block Jam',
-            link: 'https://www.crazygames.com/game/candyblockjam',
-            image: 'images/games/candy-block-jam.jpg'
-        },
-        {
-            id: 3,
-            title: 'Meow Match 3',
-            link: 'https://giroshima.itch.io/meow-match-3',
-            image: 'images/games/meow-match-3.jpg'
-        },
-        {
-            id: 4,
-            title: 'Polyline',
-            link: 'https://giroshima.itch.io/polyline',
-            image: 'images/games/polyline.png'
-        },
-        {
-            id: 5,
-            title: 'Sort Shelf',
-            link: 'https://giroshima.itch.io/sort-shelf',
-            image: 'images/games/sort-shelf.png'
+    // ---- Site data loaded from data/site-data.json ----
+    let siteData = null;
+
+    async function loadSiteData() {
+        try {
+            const resp = await fetch('data/site-data.json');
+            if (resp.ok) {
+                siteData = await resp.json();
+            }
+        } catch {
+            // site-data.json not available, siteData stays null
         }
-    ];
+    }
 
     // ---- Helpers ----
     function getGames() {
+        // 1st: localStorage (editor preview)
         try {
             const stored = JSON.parse(localStorage.getItem(GAMES_KEY));
             if (stored && stored.length > 0) return stored;
-            return DEFAULT_GAMES;
-        } catch {
-            return DEFAULT_GAMES;
-        }
+        } catch {}
+        // 2nd: site-data.json (published data from repo)
+        if (siteData && siteData.games && siteData.games.length > 0) return siteData.games;
+        return [];
     }
 
     function getVideos() {
         try {
-            return JSON.parse(localStorage.getItem(VIDEOS_KEY)) || [];
-        } catch {
-            return [];
-        }
+            const stored = JSON.parse(localStorage.getItem(VIDEOS_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.videos && siteData.videos.length > 0) return siteData.videos;
+        return [];
     }
 
     // ---- Extract YouTube Embed URL ----
@@ -269,9 +251,12 @@
     }
 
     // ---- Init ----
-    function init() {
+    async function init() {
         initNavbar();
         initSmoothScroll();
+
+        // Load published site data, then render
+        await loadSiteData();
         renderGames();
         renderVideos();
 

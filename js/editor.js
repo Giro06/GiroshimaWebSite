@@ -468,6 +468,34 @@
             });
         }
 
+        // Publish to site — downloads site-data.json for committing to repo
+        const publishBtn = document.getElementById('publish-btn');
+        if (publishBtn) {
+            publishBtn.addEventListener('click', () => {
+                const games = getGames();
+                const videos = getVideos();
+
+                if (games.length === 0 && videos.length === 0) {
+                    showToast('Nothing to publish! Add some games or videos first.');
+                    return;
+                }
+
+                const data = {
+                    games: games,
+                    videos: videos,
+                    publishedAt: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'site-data.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('site-data.json indirildi! Bunu data/ klasörüne koy ve git push yap.');
+            });
+        }
+
         if (importBtn && importFile) {
             importBtn.addEventListener('click', () => {
                 importFile.click();
