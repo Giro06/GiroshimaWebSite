@@ -14,32 +14,32 @@
         {
             id: 1,
             title: '6 Sudoku',
-            link: 'https://www.crazygames.com/game/6-sudoku',
-            image: 'https://imgs.crazygames.com/6-sudoku_16x9/20250527074418/6-sudoku_16x9-cover?format=auto&quality=85&width=600'
+            link: '',
+            image: 'images/games/6-sudoku.png'
         },
         {
             id: 2,
             title: 'Candy Block Jam',
             link: 'https://www.crazygames.com/game/candyblockjam',
-            image: 'https://imgs.crazygames.com/candyblockjam_1x1/20250821102526/candyblockjam_1x1-cover?format=auto&quality=85&width=600'
+            image: 'images/games/candy-block-jam.jpg'
         },
         {
             id: 3,
             title: 'Meow Match 3',
             link: 'https://giroshima.itch.io/meow-match-3',
-            image: 'https://img.itch.zone/aW1hZ2UvMzk3NDc1Ny8yMzcwNDA2MC5qcGc=/347x500/aDZNfa.jpg'
+            image: 'images/games/meow-match-3.jpg'
         },
         {
             id: 4,
             title: 'Polyline',
             link: 'https://giroshima.itch.io/polyline',
-            image: 'https://img.itch.zone/aW1nLzIzMDE2MzUzLnBuZw==/347x500/32kkie.png'
+            image: 'images/games/polyline.png'
         },
         {
             id: 5,
             title: 'Sort Shelf',
             link: 'https://giroshima.itch.io/sort-shelf',
-            image: 'https://img.itch.zone/aW1nLzIzMzc4NDc1LnBuZw==/347x500/iHPv4O.png'
+            image: 'images/games/sort-shelf.png'
         }
     ];
 
