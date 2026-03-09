@@ -173,7 +173,7 @@
             <a href="${game.link ? escapeHtml(game.link) : '#'}" target="_blank" rel="noopener noreferrer" class="game-card" style="animation-delay: ${i * 0.1}s" ${embedUrl ? `data-video="${escapeHtml(embedUrl)}"` : ''}>
                 <div class="game-card-image">
                     ${game.image
-                        ? `<img src="${escapeHtml(game.image)}" alt="${escapeHtml(game.title)}" loading="lazy">`
+                        ? `<img src="${game.image}" alt="${escapeHtml(game.title)}" loading="lazy">`
                         : `<div class="game-card-placeholder">&#127918;</div>`
                     }
                 </div>
