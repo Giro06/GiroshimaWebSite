@@ -1348,21 +1348,18 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     opacity: 0.7;
 }
 
 /* ========================================
-   Parallax Depth (card tilt via CSS vars)
+   Parallax Depth
    ======================================== */
-.game-card {
-    --px: 0px;
-    --py: 0px;
-}
-
-.game-card:not(:hover) {
-    transform: translate(var(--px), var(--py));
+.parallax-hero-wrap {
+    position: relative;
+    z-index: 2;
+    will-change: transform;
 }
 
 /* ========================================
