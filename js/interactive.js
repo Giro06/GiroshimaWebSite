@@ -161,22 +161,28 @@
     function initCursorSkins() {
         const SKINS_KEY = 'giroshima_cursor_skin';
 
-        const skins = [
-            { id: 'default', label: 'Default', emoji: '🖱️', css: 'default' },
-            { id: 'crosshair', label: 'Crosshair', emoji: '🎯', css: 'crosshair' },
-            { id: 'sword', label: 'Sword', emoji: '⚔️', svgCursor: buildSvgCursor('sword') },
-            { id: 'magic', label: 'Magic', emoji: '✨', svgCursor: buildSvgCursor('magic') },
-            { id: 'pixel', label: 'Pixel Hand', emoji: '👾', svgCursor: buildSvgCursor('pixel') },
-        ];
-
+        // Build SVG cursor as base64 data URI for cross-browser compat
         function buildSvgCursor(type) {
             const svgs = {
-                sword: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><line x1="4" y1="24" x2="20" y2="8" stroke="%23e94560" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="12" x2="22" y2="6" stroke="%23eaeaea" stroke-width="2"/><polygon points="22,2 26,6 22,10 18,6" fill="%23eaeaea"/><line x1="6" y1="20" x2="10" y2="24" stroke="%23e94560" stroke-width="2" stroke-linecap="round"/></svg>`,
-                magic: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><line x1="4" y1="24" x2="24" y2="4" stroke="%230f3460" stroke-width="3" stroke-linecap="round"/><line x1="4" y1="24" x2="24" y2="4" stroke="%23e94560" stroke-width="1.5" stroke-linecap="round"/><circle cx="24" cy="4" r="3" fill="%23e94560" opacity="0.8"/><circle cx="20" cy="2" r="1" fill="%23fff"/><circle cx="26" cy="8" r="1.2" fill="%23fff"/></svg>`,
-                pixel: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><rect x="4" y="2" width="4" height="4" fill="%23eaeaea"/><rect x="4" y="6" width="4" height="12" fill="%23eaeaea"/><rect x="8" y="14" width="4" height="4" fill="%23eaeaea"/><rect x="12" y="14" width="4" height="4" fill="%23eaeaea"/><rect x="12" y="18" width="4" height="4" fill="%23eaeaea"/><rect x="16" y="14" width="4" height="4" fill="%23eaeaea"/><rect x="8" y="18" width="4" height="6" fill="%23eaeaea"/><rect x="4" y="18" width="4" height="4" fill="%23e94560"/></svg>`,
+                sword: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="6" y1="26" x2="22" y2="10" stroke="#e94560" stroke-width="2.5" stroke-linecap="round"/><line x1="18" y1="14" x2="24" y2="8" stroke="#eaeaea" stroke-width="2"/><polygon points="24,4 28,8 24,12 20,8" fill="#eaeaea"/><line x1="8" y1="22" x2="12" y2="26" stroke="#e94560" stroke-width="2" stroke-linecap="round"/></svg>',
+                magic: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="6" y1="26" x2="26" y2="6" stroke="#0f3460" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="26" x2="26" y2="6" stroke="#e94560" stroke-width="1.5" stroke-linecap="round"/><circle cx="26" cy="6" r="3" fill="#e94560" opacity="0.8"/><circle cx="22" cy="3" r="1.5" fill="#fff"/><circle cx="29" cy="10" r="1.5" fill="#fff"/></svg>',
+                pixel: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="1" width="5" height="5" fill="#eaeaea"/><rect x="2" y="6" width="5" height="14" fill="#eaeaea"/><rect x="7" y="16" width="5" height="5" fill="#eaeaea"/><rect x="12" y="16" width="5" height="5" fill="#eaeaea"/><rect x="12" y="21" width="5" height="5" fill="#eaeaea"/><rect x="17" y="16" width="5" height="5" fill="#eaeaea"/><rect x="7" y="21" width="5" height="7" fill="#eaeaea"/><rect x="2" y="20" width="5" height="5" fill="#e94560"/></svg>',
             };
-            return `url("data:image/svg+xml,${svgs[type]}") 4 4, auto`;
+            return 'url("data:image/svg+xml;base64,' + btoa(svgs[type]) + '") 2 2, auto';
         }
+
+        const skins = [
+            { id: 'default', label: 'Default', emoji: '🖱️', cursorValue: '' },
+            { id: 'crosshair', label: 'Crosshair', emoji: '🎯', cursorValue: 'crosshair' },
+            { id: 'sword', label: 'Sword', emoji: '⚔️', cursorValue: buildSvgCursor('sword') },
+            { id: 'magic', label: 'Magic', emoji: '✨', cursorValue: buildSvgCursor('magic') },
+            { id: 'pixel', label: 'Pixel Hand', emoji: '👾', cursorValue: buildSvgCursor('pixel') },
+        ];
+
+        // Inject a <style> tag so cursor applies to ALL elements (not just body)
+        const styleEl = document.createElement('style');
+        styleEl.id = 'cursor-skin-style';
+        document.head.appendChild(styleEl);
 
         // Build picker UI
         const picker = document.createElement('div');
@@ -202,19 +208,21 @@
             menu.classList.toggle('open');
         });
 
-        // Close on outside click
         document.addEventListener('click', (e) => {
             if (!picker.contains(e.target)) menu.classList.remove('open');
         });
 
         function applySkin(skinId) {
             const skin = skins.find(s => s.id === skinId) || skins[0];
-            if (skin.svgCursor) {
-                document.body.style.cursor = skin.svgCursor;
+
+            if (skin.cursorValue) {
+                // Use !important so it overrides all child element cursors
+                styleEl.textContent = `*, *::before, *::after { cursor: ${skin.cursorValue} !important; }`;
             } else {
-                document.body.style.cursor = skin.css;
+                // Default — remove overrides, let normal cursors work
+                styleEl.textContent = '';
             }
-            // Update active state
+
             picker.querySelectorAll('.cursor-skin-option').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.skin === skinId);
             });
