@@ -98,43 +98,56 @@
     // ================================================
     //  2) PARALLAX DEPTH
     //  Mouse-reactive layered depth on cards & hero
+    //  Uses wrapper elements to avoid conflicting with
+    //  existing CSS animations (slideUp, cardReveal, hover).
     // ================================================
     function initParallax() {
         let mx = 0, my = 0;
         let cx = 0, cy = 0;
+        let ready = false;
+
+        // Wait for entry animations to finish before applying parallax
+        setTimeout(() => { ready = true; }, 1500);
 
         document.addEventListener('mousemove', (e) => {
             mx = (e.clientX / window.innerWidth - 0.5) * 2;   // -1 to 1
             my = (e.clientY / window.innerHeight - 0.5) * 2;
         });
 
+        // Wrap hero-content in a parallax container so we don't
+        // override the child elements' own CSS animations.
+        const heroContent = document.querySelector('.hero-content');
+        if (heroContent) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'parallax-hero-wrap';
+            wrapper.style.willChange = 'transform';
+            heroContent.parentNode.insertBefore(wrapper, heroContent);
+            wrapper.appendChild(heroContent);
+        }
+
         // Smooth lerp
         function tick() {
             cx += (mx - cx) * 0.08;
             cy += (my - cy) * 0.08;
 
-            // Hero parallax layers
-            const heroGlow = document.querySelector('.hero-glow');
-            const heroTitle = document.querySelector('.hero-title');
-            const heroSubtitle = document.querySelector('.hero-subtitle');
+            if (ready) {
+                // Move the hero wrapper (children keep their own animations)
+                const heroWrap = document.querySelector('.parallax-hero-wrap');
+                if (heroWrap) {
+                    heroWrap.style.transform = `translate(${cx * -12}px, ${cy * -8}px)`;
+                }
 
-            if (heroGlow) heroGlow.style.transform = `translate(calc(-50% + ${cx * 30}px), calc(-50% + ${cy * 30}px))`;
-            if (heroTitle) heroTitle.style.transform = `translate(${cx * -12}px, ${cy * -8}px)`;
-            if (heroSubtitle) heroSubtitle.style.transform = `translate(${cx * -6}px, ${cy * -4}px)`;
+                // Hero glow — keep original translate(-50%,-50%) + add parallax offset
+                const heroGlow = document.querySelector('.hero-glow');
+                if (heroGlow) {
+                    heroGlow.style.transform = `translate(calc(-50% + ${cx * 30}px), calc(-50% + ${cy * 30}px))`;
+                }
 
-            // Game cards tilt
-            document.querySelectorAll('.game-card').forEach((card) => {
-                const rect = card.getBoundingClientRect();
-                const cardCX = rect.left + rect.width / 2;
-                const cardCY = rect.top + rect.height / 2;
-                const dx = (cardCX / window.innerWidth - 0.5) * 2;
-                const dy = (cardCY / window.innerHeight - 0.5) * 2;
-
-                // Cards further from centre move more
-                const depth = 1 + Math.abs(dx) * 0.5;
-                card.style.setProperty('--px', `${cx * 4 * depth}px`);
-                card.style.setProperty('--py', `${cy * 4 * depth}px`);
-            });
+                // Section titles — subtle float
+                document.querySelectorAll('.section-title').forEach(el => {
+                    el.style.transform = `translate(${cx * -4}px, ${cy * -3}px)`;
+                });
+            }
 
             requestAnimationFrame(tick);
         }
