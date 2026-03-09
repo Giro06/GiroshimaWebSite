@@ -468,23 +468,33 @@
             });
         }
 
-        // Publish to site — downloads site-data.json for committing to repo
+        // ---- Publish to GitHub ----
+        const GITHUB_TOKEN_KEY = 'giroshima_github_token';
+        const GITHUB_REPO = 'Giro06/GiroshimaWebSite';
+        const GITHUB_FILE_PATH = 'data/site-data.json';
+
+        const githubTokenInput = document.getElementById('github-token');
         const publishBtn = document.getElementById('publish-btn');
-        if (publishBtn) {
-            publishBtn.addEventListener('click', () => {
-                const games = getGames();
-                const videos = getVideos();
+        const downloadBtn = document.getElementById('download-site-data-btn');
 
-                if (games.length === 0 && videos.length === 0) {
-                    showToast('Nothing to publish! Add some games or videos first.');
-                    return;
-                }
+        // Restore saved token
+        if (githubTokenInput) {
+            const savedToken = localStorage.getItem(GITHUB_TOKEN_KEY) || '';
+            if (savedToken) githubTokenInput.value = savedToken;
+        }
 
-                const data = {
-                    games: games,
-                    videos: videos,
-                    publishedAt: new Date().toISOString()
-                };
+        function buildSiteData() {
+            const games = getGames();
+            const videos = getVideos();
+            if (games.length === 0 && videos.length === 0) return null;
+            return { games, videos, publishedAt: new Date().toISOString() };
+        }
+
+        // Download as file (fallback)
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                const data = buildSiteData();
+                if (!data) { showToast('Yayınlanacak içerik yok!'); return; }
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -492,7 +502,73 @@
                 a.download = 'site-data.json';
                 a.click();
                 URL.revokeObjectURL(url);
-                showToast('site-data.json indirildi! Bunu data/ klasörüne koy ve git push yap.');
+                showToast('site-data.json indirildi!');
+            });
+        }
+
+        // Publish directly to GitHub
+        if (publishBtn) {
+            publishBtn.addEventListener('click', async () => {
+                const token = githubTokenInput ? githubTokenInput.value.trim() : '';
+                if (!token) {
+                    showToast('GitHub token gerekli!');
+                    if (githubTokenInput) githubTokenInput.focus();
+                    return;
+                }
+
+                const data = buildSiteData();
+                if (!data) { showToast('Yayınlanacak içerik yok!'); return; }
+
+                // Save token for next time
+                localStorage.setItem(GITHUB_TOKEN_KEY, token);
+
+                publishBtn.disabled = true;
+                publishBtn.textContent = 'Yayınlanıyor...';
+
+                try {
+                    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+
+                    // Get current file SHA (needed for updates)
+                    let sha = null;
+                    try {
+                        const getResp = await fetch(apiUrl, {
+                            headers: { 'Authorization': `token ${token}` }
+                        });
+                        if (getResp.ok) {
+                            const fileInfo = await getResp.json();
+                            sha = fileInfo.sha;
+                        }
+                    } catch {}
+
+                    // Commit the file
+                    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+                    const body = {
+                        message: 'Update site data from editor',
+                        content: content
+                    };
+                    if (sha) body.sha = sha;
+
+                    const putResp = await fetch(apiUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    });
+
+                    if (putResp.ok) {
+                        showToast('Yayınlandı! Site güncellendi.');
+                    } else {
+                        const err = await putResp.json().catch(() => ({}));
+                        showToast(`Hata: ${err.message || putResp.status}`);
+                    }
+                } catch (e) {
+                    showToast(`Bağlantı hatası: ${e.message}`);
+                } finally {
+                    publishBtn.disabled = false;
+                    publishBtn.textContent = 'Yayınla';
+                }
             });
         }
 
