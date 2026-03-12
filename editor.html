@@ -139,10 +139,24 @@
                     </div>
 
                     <div class="add-form" style="margin-top: 24px;">
-                        <h3>Data Management</h3>
-                        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">Export or import your content data as JSON.</p>
+                        <h3>Siteye Yayınla</h3>
+                        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">Oyun ve video verilerini doğrudan GitHub repo'suna gönder. Herkes değişiklikleri anında görür.</p>
+                        <div class="form-group">
+                            <label for="github-token">GitHub Token</label>
+                            <input type="password" id="github-token" placeholder="ghp_... (repo yetkili token)">
+                            <small style="color:var(--text-muted); font-size:0.75rem;">Token sadece browserında saklanır, kimseyle paylaşılmaz.</small>
+                        </div>
                         <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                            <button type="button" class="form-btn" id="export-btn" style="flex:1; min-width:150px;">Export Data</button>
+                            <button type="button" class="form-btn" id="publish-btn" style="flex:1; background: linear-gradient(135deg, #6bcb77, #3a9647);">Yayınla</button>
+                            <button type="button" class="form-btn" id="download-site-data-btn" style="flex:0 0 auto; background: linear-gradient(135deg, #444, #666);">JSON İndir</button>
+                        </div>
+                    </div>
+
+                    <div class="add-form" style="margin-top: 24px;">
+                        <h3>Data Management</h3>
+                        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">Export or import your content data as JSON backup.</p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <button type="button" class="form-btn" id="export-btn" style="flex:1; min-width:150px;">Export Backup</button>
                             <button type="button" class="form-btn" id="import-btn" style="flex:1; min-width:150px; background:var(--accent-secondary);">Import Data</button>
                         </div>
                         <input type="file" id="import-file" accept=".json" style="display:none;">

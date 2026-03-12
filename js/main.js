@@ -9,51 +9,39 @@
     const GAMES_KEY = 'giroshima_games';
     const VIDEOS_KEY = 'giroshima_videos';
 
-    // ---- Default Games (from old site) ----
-    const DEFAULT_GAMES = [
-        {
-            id: 1,
-            title: 'Candy Block Jam',
-            link: 'https://www.crazygames.com/game/candyblockjam',
-            image: ''
-        },
-        {
-            id: 2,
-            title: 'Polyline',
-            link: 'https://giroshima.itch.io/polyline',
-            image: ''
-        },
-        {
-            id: 3,
-            title: 'Sort Shelf',
-            link: 'https://giroshima.itch.io/sort-shelf',
-            image: ''
-        },
-        {
-            id: 4,
-            title: 'Meow Match 3',
-            link: 'https://giroshima.itch.io/meow-match-3',
-            image: ''
+    // ---- Site data loaded from data/site-data.json ----
+    let siteData = null;
+
+    async function loadSiteData() {
+        try {
+            const resp = await fetch('data/site-data.json');
+            if (resp.ok) {
+                siteData = await resp.json();
+            }
+        } catch {
+            // site-data.json not available, siteData stays null
         }
-    ];
+    }
 
     // ---- Helpers ----
     function getGames() {
+        // 1st: localStorage (editor preview)
         try {
             const stored = JSON.parse(localStorage.getItem(GAMES_KEY));
             if (stored && stored.length > 0) return stored;
-            return DEFAULT_GAMES;
-        } catch {
-            return DEFAULT_GAMES;
-        }
+        } catch {}
+        // 2nd: site-data.json (published data from repo)
+        if (siteData && siteData.games && siteData.games.length > 0) return siteData.games;
+        return [];
     }
 
     function getVideos() {
         try {
-            return JSON.parse(localStorage.getItem(VIDEOS_KEY)) || [];
-        } catch {
-            return [];
-        }
+            const stored = JSON.parse(localStorage.getItem(VIDEOS_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.videos && siteData.videos.length > 0) return siteData.videos;
+        return [];
     }
 
     // ---- Extract YouTube Embed URL ----
@@ -103,7 +91,7 @@
             <a href="${game.link ? escapeHtml(game.link) : '#'}" target="_blank" rel="noopener noreferrer" class="game-card" style="animation-delay: ${i * 0.1}s" ${embedUrl ? `data-video="${escapeHtml(embedUrl)}"` : ''}>
                 <div class="game-card-image">
                     ${game.image
-                        ? `<img src="${escapeHtml(game.image)}" alt="${escapeHtml(game.title)}" loading="lazy">`
+                        ? `<img src="${game.image}" alt="${escapeHtml(game.title)}" loading="lazy">`
                         : `<div class="game-card-placeholder">&#127918;</div>`
                     }
                 </div>
@@ -263,9 +251,12 @@
     }
 
     // ---- Init ----
-    function init() {
+    async function init() {
         initNavbar();
         initSmoothScroll();
+
+        // Load published site data, then render
+        await loadSiteData();
         renderGames();
         renderVideos();
 
