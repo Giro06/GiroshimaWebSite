@@ -292,6 +292,56 @@ img {
     50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
 }
 
+/* Hero Mini-games */
+.hero-minigame {
+    position: absolute;
+    z-index: 3;
+    opacity: 0;
+    animation: fadeIn 1.5s ease 1.2s forwards;
+    transition: opacity 0.3s ease;
+}
+
+.hero-minigame canvas {
+    display: block;
+    border: 1px solid rgba(234, 234, 234, 0.1);
+    border-radius: 10px;
+    background: rgba(10, 10, 15, 0.5);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+}
+
+.hero-minigame canvas:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.2);
+}
+
+.minigame-label {
+    display: block;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 8px;
+}
+
+.hero-minigame-left {
+    bottom: 60px;
+    left: 40px;
+}
+
+.hero-minigame-right {
+    bottom: 60px;
+    right: 40px;
+}
+
+@media (max-width: 900px) {
+    .hero-minigame {
+        display: none;
+    }
+}
+
 /* Buttons */
 .btn {
     display: inline-block;
