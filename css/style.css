@@ -314,6 +314,10 @@ img {
     right: 20px;
 }
 
+.hero-minigames-group .hero-minigame {
+    position: relative;
+}
+
 .hero-minigame canvas {
     display: block;
     border: 1px solid rgba(234, 234, 234, 0.1);
