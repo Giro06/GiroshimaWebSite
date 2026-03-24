@@ -326,16 +326,28 @@ img {
     margin-top: 8px;
 }
 
-.hero-minigame-left {
+.hero-minigame-tl {
     position: absolute;
-    bottom: 60px;
-    left: 40px;
+    top: 100px;
+    left: 30px;
 }
 
-.hero-minigame-right {
+.hero-minigame-bl {
     position: absolute;
-    bottom: 60px;
-    right: 40px;
+    bottom: 40px;
+    left: 30px;
+}
+
+.hero-minigame-tr {
+    position: absolute;
+    top: 100px;
+    right: 30px;
+}
+
+.hero-minigame-br {
+    position: absolute;
+    bottom: 40px;
+    right: 30px;
 }
 
 @media (max-width: 900px) {
