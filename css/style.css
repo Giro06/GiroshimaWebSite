@@ -327,11 +327,13 @@ img {
 }
 
 .hero-minigame-left {
+    position: absolute;
     bottom: 60px;
     left: 40px;
 }
 
 .hero-minigame-right {
+    position: absolute;
     bottom: 60px;
     right: 40px;
 }
