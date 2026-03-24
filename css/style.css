@@ -295,13 +295,9 @@ img {
 /* Hero Mini-games */
 .hero-minigames-group {
     position: absolute;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 3;
     opacity: 0;
     animation: fadeIn 1.5s ease 1.2s forwards;
 }
@@ -315,11 +311,17 @@ img {
 }
 
 .hero-minigames-group .hero-minigame {
-    position: relative;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.hero-minigames-group .hero-minigame:last-child {
+    margin-bottom: 0;
 }
 
 .hero-minigame canvas {
     display: block;
+    margin: 0 auto;
     border: 1px solid rgba(234, 234, 234, 0.1);
     border-radius: 8px;
     background: rgba(10, 10, 15, 0.5);
