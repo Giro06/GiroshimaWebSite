@@ -639,12 +639,257 @@
         draw();
     }
 
+    // =====================
+    // BRICK BREAKER (left-bottom)
+    // =====================
+    function initBrickBreaker() {
+        const canvas = document.getElementById('brickbreaker-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const accent = '#e94560';
+        let paused = false;
+
+        const paddleW = 40, paddleH = 6;
+        let paddleX = (W - paddleW) / 2;
+        const ballR = 3;
+        let ballX, ballY, ballDX, ballDY;
+
+        const brickRows = 3, brickCols = 6;
+        const brickW = (W - 16) / brickCols;
+        const brickH = 8;
+        const brickPad = 2;
+        const brickOffsetTop = 10;
+        const brickOffsetLeft = 8;
+        let bricks = [];
+        const brickColors = ['#e94560', '#ff6b81', '#0f3460'];
+
+        function initBricks() {
+            bricks = [];
+            for (let r = 0; r < brickRows; r++) {
+                bricks[r] = [];
+                for (let c = 0; c < brickCols; c++) {
+                    bricks[r][c] = { alive: true };
+                }
+            }
+        }
+
+        function resetBall() {
+            ballX = W / 2;
+            ballY = H - 25;
+            ballDX = 1.2 * (Math.random() > 0.5 ? 1 : -1);
+            ballDY = -1.2;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            for (let r = 0; r < brickRows; r++) {
+                for (let c = 0; c < brickCols; c++) {
+                    if (!bricks[r][c].alive) continue;
+                    const bx = brickOffsetLeft + c * brickW;
+                    const by = brickOffsetTop + r * (brickH + brickPad);
+                    ctx.fillStyle = brickColors[r % brickColors.length];
+                    ctx.shadowColor = brickColors[r % brickColors.length];
+                    ctx.shadowBlur = 3;
+                    ctx.beginPath();
+                    ctx.roundRect(bx, by, brickW - brickPad, brickH, 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+            ctx.fillStyle = '#eaeaea';
+            ctx.shadowColor = '#eaeaea';
+            ctx.shadowBlur = 4;
+            ctx.beginPath();
+            ctx.roundRect(paddleX, H - 12, paddleW, paddleH, 3);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = accent;
+            ctx.shadowColor = accent;
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballR, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function update() {
+            ballX += ballDX;
+            ballY += ballDY;
+            if (ballX - ballR <= 0 || ballX + ballR >= W) ballDX = -ballDX;
+            if (ballY - ballR <= 0) ballDY = -ballDY;
+            if (ballY + ballR >= H - 12 && ballX >= paddleX && ballX <= paddleX + paddleW) {
+                ballDY = -Math.abs(ballDY);
+                ballDX = ((ballX - paddleX) / paddleW - 0.5) * 2.5;
+            }
+            if (ballY > H + 10) { resetBall(); initBricks(); }
+            for (let r = 0; r < brickRows; r++) {
+                for (let c = 0; c < brickCols; c++) {
+                    const b = bricks[r][c];
+                    if (!b.alive) continue;
+                    const bx = brickOffsetLeft + c * brickW;
+                    const by = brickOffsetTop + r * (brickH + brickPad);
+                    if (ballX + ballR > bx && ballX - ballR < bx + brickW - brickPad &&
+                        ballY + ballR > by && ballY - ballR < by + brickH) {
+                        b.alive = false;
+                        ballDY = -ballDY;
+                    }
+                }
+            }
+            if (bricks.every(function(row) { return row.every(function(b) { return !b.alive; }); })) {
+                initBricks(); resetBall();
+            }
+        }
+
+        canvas.addEventListener('mousemove', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            paddleX = (e.clientX - rect.left) * (W / rect.width) - paddleW / 2;
+            paddleX = Math.max(0, Math.min(W - paddleW, paddleX));
+        });
+
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            paddleX = (e.touches[0].clientX - rect.left) * (W / rect.width) - paddleW / 2;
+            paddleX = Math.max(0, Math.min(W - paddleW, paddleX));
+        }, { passive: false });
+
+        observePause(canvas, function(p) { paused = p; });
+        initBricks();
+        resetBall();
+        (function loop() {
+            if (!paused) { update(); draw(); }
+            requestAnimationFrame(loop);
+        })();
+    }
+
+    // =====================
+    // TIC TAC TOE (right-bottom)
+    // =====================
+    function initTicTacToe() {
+        const canvas = document.getElementById('tictactoe-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const size = canvas.width;
+        const cellSize = size / 3;
+        const accent = '#e94560';
+        const lineColor = 'rgba(234, 234, 234, 0.3)';
+
+        let board = Array(9).fill(null);
+        let playerTurn = true;
+        let gameOver = false;
+        let winLine = null;
+        let resetTimer = null;
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, size, size);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 0;
+            for (let i = 1; i < 3; i++) {
+                ctx.beginPath(); ctx.moveTo(i * cellSize, 4); ctx.lineTo(i * cellSize, size - 4); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(4, i * cellSize); ctx.lineTo(size - 4, i * cellSize); ctx.stroke();
+            }
+        }
+
+        function drawX(row, col) {
+            const x = col * cellSize + cellSize / 2, y = row * cellSize + cellSize / 2, pad = cellSize * 0.25;
+            ctx.strokeStyle = accent; ctx.lineWidth = 3; ctx.lineCap = 'round';
+            ctx.shadowColor = accent; ctx.shadowBlur = 8;
+            ctx.beginPath(); ctx.moveTo(x - pad, y - pad); ctx.lineTo(x + pad, y + pad); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + pad, y - pad); ctx.lineTo(x - pad, y + pad); ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawO(row, col) {
+            const x = col * cellSize + cellSize / 2, y = row * cellSize + cellSize / 2;
+            ctx.strokeStyle = '#0f3460'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+            ctx.shadowColor = '#0f3460'; ctx.shadowBlur = 8;
+            ctx.beginPath(); ctx.arc(x, y, cellSize * 0.25, 0, Math.PI * 2); ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawWinLine() {
+            if (!winLine) return;
+            const [a, b] = winLine;
+            ctx.strokeStyle = accent; ctx.lineWidth = 4;
+            ctx.shadowColor = accent; ctx.shadowBlur = 15; ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo((a % 3) * cellSize + cellSize / 2, Math.floor(a / 3) * cellSize + cellSize / 2);
+            ctx.lineTo((b % 3) * cellSize + cellSize / 2, Math.floor(b / 3) * cellSize + cellSize / 2);
+            ctx.stroke(); ctx.shadowBlur = 0;
+        }
+
+        function render() {
+            drawGrid();
+            for (let i = 0; i < 9; i++) {
+                const row = Math.floor(i / 3), col = i % 3;
+                if (board[i] === 'X') drawX(row, col);
+                else if (board[i] === 'O') drawO(row, col);
+            }
+            drawWinLine();
+        }
+
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+        function checkWin(mark) {
+            for (const [a, b, c] of wins) {
+                if (board[a] === mark && board[b] === mark && board[c] === mark) { winLine = [a, c]; return true; }
+            }
+            return false;
+        }
+
+        function aiMove() {
+            if (gameOver) return;
+            const empty = board.map(function(v, i) { return v === null ? i : -1; }).filter(function(i) { return i >= 0; });
+            if (empty.length === 0) return;
+            for (const mark of ['O', 'X']) {
+                for (const i of empty) {
+                    board[i] = mark;
+                    if (checkWin(mark)) {
+                        board[i] = null; winLine = null;
+                        if (mark === 'O') { board[i] = 'O'; checkWin('O'); gameOver = true; render(); scheduleReset(); return; }
+                        else { board[i] = 'O'; playerTurn = true; render(); return; }
+                    }
+                    board[i] = null; winLine = null;
+                }
+            }
+            if (board[4] === null) board[4] = 'O';
+            else board[empty[Math.floor(Math.random() * empty.length)]] = 'O';
+            if (checkWin('O')) { gameOver = true; render(); scheduleReset(); return; }
+            if (board.every(function(c) { return c !== null; })) { gameOver = true; scheduleReset(); }
+            playerTurn = true; render();
+        }
+
+        function scheduleReset() { clearTimeout(resetTimer); resetTimer = setTimeout(resetGame, 2000); }
+        function resetGame() { board = Array(9).fill(null); playerTurn = true; gameOver = false; winLine = null; render(); }
+
+        canvas.addEventListener('click', function(e) {
+            if (!playerTurn || gameOver) return;
+            const rect = canvas.getBoundingClientRect();
+            const col = Math.floor((e.clientX - rect.left) * (size / rect.width) / cellSize);
+            const row = Math.floor((e.clientY - rect.top) * (size / rect.height) / cellSize);
+            const idx = row * 3 + col;
+            if (board[idx] !== null) return;
+            board[idx] = 'X';
+            if (checkWin('X')) { gameOver = true; render(); scheduleReset(); return; }
+            if (board.every(function(c) { return c !== null; })) { gameOver = true; render(); scheduleReset(); return; }
+            playerTurn = false; render();
+            setTimeout(aiMove, 400);
+        });
+
+        render();
+    }
+
     // Init all games
     function initAll() {
         initSnake();
         initPong();
+        initBrickBreaker();
         initTetris();
         initMemory();
+        initTicTacToe();
     }
 
     if (document.readyState === 'loading') {

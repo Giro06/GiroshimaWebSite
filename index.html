@@ -48,22 +48,35 @@
                 <a href="#games" class="btn btn-primary">Explore Games</a>
             </div>
         </div>
-        <!-- Mini-games -->
-        <div class="hero-minigame hero-minigame-tl">
-            <canvas id="snake-canvas" width="180" height="140"></canvas>
-            <span class="minigame-label">Snake</span>
+        <!-- Mini-games Left Column -->
+        <div class="hero-minigames-group hero-minigames-left">
+            <div class="hero-minigame">
+                <canvas id="snake-canvas" width="160" height="120"></canvas>
+                <span class="minigame-label">Snake</span>
+            </div>
+            <div class="hero-minigame">
+                <canvas id="pong-canvas" width="160" height="120"></canvas>
+                <span class="minigame-label">Pong</span>
+            </div>
+            <div class="hero-minigame">
+                <canvas id="brickbreaker-canvas" width="160" height="120"></canvas>
+                <span class="minigame-label">Brick Breaker</span>
+            </div>
         </div>
-        <div class="hero-minigame hero-minigame-bl">
-            <canvas id="pong-canvas" width="180" height="140"></canvas>
-            <span class="minigame-label">Pong</span>
-        </div>
-        <div class="hero-minigame hero-minigame-tr">
-            <canvas id="tetris-canvas" width="130" height="180"></canvas>
-            <span class="minigame-label">Tetris</span>
-        </div>
-        <div class="hero-minigame hero-minigame-br">
-            <canvas id="memory-canvas" width="180" height="140"></canvas>
-            <span class="minigame-label">Memory</span>
+        <!-- Mini-games Right Column -->
+        <div class="hero-minigames-group hero-minigames-right">
+            <div class="hero-minigame">
+                <canvas id="tetris-canvas" width="120" height="160"></canvas>
+                <span class="minigame-label">Tetris</span>
+            </div>
+            <div class="hero-minigame">
+                <canvas id="memory-canvas" width="160" height="120"></canvas>
+                <span class="minigame-label">Memory</span>
+            </div>
+            <div class="hero-minigame">
+                <canvas id="tictactoe-canvas" width="130" height="130"></canvas>
+                <span class="minigame-label">Tic Tac Toe</span>
+            </div>
         </div>
         <div class="hero-glow"></div>
     </header>
