@@ -12,10 +12,29 @@
     const DEFAULT_PASSWORD = 'giroshima2026';
     const VIDEOS_KEY = 'giroshima_videos';
 
+    // ---- Site data from repo (fallback) ----
+    let siteData = null;
+    let siteDataLoaded = false;
+
+    async function loadSiteData() {
+        if (siteDataLoaded) return;
+        try {
+            const resp = await fetch('data/site-data.json');
+            if (resp.ok) {
+                siteData = await resp.json();
+            }
+        } catch {}
+        siteDataLoaded = true;
+    }
+
     // ---- Helpers ----
     function getGames() {
-        try { return JSON.parse(localStorage.getItem(GAMES_KEY)) || []; }
-        catch { return []; }
+        try {
+            const stored = JSON.parse(localStorage.getItem(GAMES_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.games && siteData.games.length > 0) return siteData.games;
+        return [];
     }
 
     function saveGames(games) {
@@ -29,8 +48,12 @@
     }
 
     function getVideos() {
-        try { return JSON.parse(localStorage.getItem(VIDEOS_KEY)) || []; }
-        catch { return []; }
+        try {
+            const stored = JSON.parse(localStorage.getItem(VIDEOS_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.videos && siteData.videos.length > 0) return siteData.videos;
+        return [];
     }
 
     function saveVideos(videos) {
@@ -68,12 +91,13 @@
     }
 
     // ---- Auth ----
-    function showEditor() {
+    async function showEditor() {
         const loginSection = document.getElementById('login-section');
         const editorPanel = document.getElementById('editor-panel');
         if (loginSection) loginSection.style.display = 'none';
         if (editorPanel) editorPanel.classList.add('active');
         sessionStorage.setItem(SESSION_KEY, 'true');
+        await loadSiteData();
         renderGamesList();
         renderVideosList();
     }
