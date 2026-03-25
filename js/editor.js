@@ -116,10 +116,10 @@
         const passwordInput = document.getElementById('admin-password');
         if (!loginBtn || !passwordInput) return;
 
-        loginBtn.addEventListener('click', () => {
+        loginBtn.addEventListener('click', async () => {
             const pw = passwordInput.value;
             if (pw === getPassword()) {
-                showEditor();
+                await showEditor();
                 showToast('Welcome back!');
             } else {
                 showToast('Wrong password!');
@@ -674,7 +674,7 @@
     }
 
     // ---- Init ----
-    function init() {
+    async function init() {
         // 1. Setup all event listeners first
         initNavbar();
         initTabs();
@@ -694,7 +694,7 @@
 
         // 3. Auto-login if session exists
         if (isLoggedIn()) {
-            showEditor();
+            await showEditor();
         }
 
         // 4. Compress old uncompressed images in background
