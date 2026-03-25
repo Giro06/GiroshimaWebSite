@@ -689,6 +689,64 @@
         if (cancelEditBtn) cancelEditBtn.addEventListener('click', clearForm);
         if (addVideoBtn) addVideoBtn.addEventListener('click', addVideo);
 
+        // Sync from server buttons
+        const syncGamesBtn = document.getElementById('sync-games-btn');
+        const syncVideosBtn = document.getElementById('sync-videos-btn');
+
+        if (syncGamesBtn) {
+            syncGamesBtn.addEventListener('click', async () => {
+                syncGamesBtn.disabled = true;
+                syncGamesBtn.textContent = 'Syncing...';
+                try {
+                    const resp = await fetch('data/site-data.json?' + Date.now());
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data.games && data.games.length > 0) {
+                            saveGames(data.games);
+                            renderGamesList();
+                            showToast('Games synced from server! (' + data.games.length + ' games)');
+                        } else {
+                            showToast('No games found on server.');
+                        }
+                    } else {
+                        showToast('Failed to fetch site-data.json');
+                    }
+                } catch (e) {
+                    showToast('Sync error: ' + e.message);
+                } finally {
+                    syncGamesBtn.disabled = false;
+                    syncGamesBtn.innerHTML = '&#8635; Sync from Server';
+                }
+            });
+        }
+
+        if (syncVideosBtn) {
+            syncVideosBtn.addEventListener('click', async () => {
+                syncVideosBtn.disabled = true;
+                syncVideosBtn.textContent = 'Syncing...';
+                try {
+                    const resp = await fetch('data/site-data.json?' + Date.now());
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data.videos && data.videos.length > 0) {
+                            saveVideos(data.videos);
+                            renderVideosList();
+                            showToast('Videos synced from server! (' + data.videos.length + ' videos)');
+                        } else {
+                            showToast('No videos found on server.');
+                        }
+                    } else {
+                        showToast('Failed to fetch site-data.json');
+                    }
+                } catch (e) {
+                    showToast('Sync error: ' + e.message);
+                } finally {
+                    syncVideosBtn.disabled = false;
+                    syncVideosBtn.innerHTML = '&#8635; Sync from Server';
+                }
+            });
+        }
+
         // 2. Setup login (may trigger showEditor which renders lists)
         initLogin();
 
