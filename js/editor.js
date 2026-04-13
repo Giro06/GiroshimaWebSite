@@ -7,6 +7,7 @@
 
     // ---- Storage Keys ----
     const GAMES_KEY = 'giroshima_games';
+    const APPS_KEY = 'giroshima_apps';
     const PASSWORD_KEY = 'giroshima_admin_pw';
     const SESSION_KEY = 'giroshima_session';
     const DEFAULT_PASSWORD = 'giroshima2026';
@@ -40,6 +41,25 @@
     function saveGames(games) {
         try {
             localStorage.setItem(GAMES_KEY, JSON.stringify(games));
+            return true;
+        } catch (e) {
+            showToast('Storage full! Try using smaller images.');
+            return false;
+        }
+    }
+
+    function getApps() {
+        try {
+            const stored = JSON.parse(localStorage.getItem(APPS_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.apps && siteData.apps.length > 0) return siteData.apps;
+        return [];
+    }
+
+    function saveApps(apps) {
+        try {
+            localStorage.setItem(APPS_KEY, JSON.stringify(apps));
             return true;
         } catch (e) {
             showToast('Storage full! Try using smaller images.');
@@ -99,6 +119,7 @@
         sessionStorage.setItem(SESSION_KEY, 'true');
         await loadSiteData();
         renderGamesList();
+        renderAppsList();
         renderVideosList();
     }
 
@@ -367,6 +388,194 @@
         renderGamesList();
     };
 
+    // ---- Apps CRUD ----
+    let editingAppIndex = -1;
+    let uploadedAppImageData = '';
+    let appImageReady = true;
+
+    function renderAppsList() {
+        const list = document.getElementById('apps-list');
+        if (!list) return;
+        const apps = getApps();
+
+        if (apps.length === 0) {
+            list.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:24px;">No apps yet. Add your first app above!</p>';
+            return;
+        }
+
+        list.innerHTML = apps.map((app, i) => `
+            <div class="item-row${editingAppIndex === i ? ' editing' : ''}">
+                ${app.image
+                    ? `<img class="item-row-thumb" src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title)}">`
+                    : `<div class="item-row-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">&#128241;</div>`
+                }
+                <div class="item-row-info">
+                    <div class="item-row-title">${escapeHtml(app.title)}</div>
+                    <div class="item-row-subtitle">${app.link ? escapeHtml(app.link) : 'No link'}${app.video ? ' &bull; Video' : ''}</div>
+                </div>
+                <div class="item-row-actions">
+                    <button class="btn-icon" onclick="editorEditApp(${i})" title="Edit">&#9998;</button>
+                    <button class="btn-icon" onclick="editorMoveApp(${i}, -1)" title="Move up">&#8593;</button>
+                    <button class="btn-icon" onclick="editorMoveApp(${i}, 1)" title="Move down">&#8595;</button>
+                    <button class="btn-icon delete" onclick="editorDeleteApp(${i})" title="Delete">&#10005;</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function setAppFormMode(mode) {
+        const btn = document.getElementById('add-app-btn');
+        const cancelBtn = document.getElementById('cancel-app-edit-btn');
+        const formTitle = document.querySelector('#apps-tab .add-form h3');
+        if (!btn || !cancelBtn || !formTitle) return;
+        if (mode === 'edit') {
+            btn.textContent = 'Update App';
+            cancelBtn.style.display = 'inline-block';
+            formTitle.textContent = 'Edit App';
+        } else {
+            btn.textContent = 'Add App';
+            cancelBtn.style.display = 'none';
+            formTitle.textContent = 'Add New App';
+            editingAppIndex = -1;
+        }
+    }
+
+    function clearAppForm() {
+        document.getElementById('app-title').value = '';
+        document.getElementById('app-link').value = '';
+        document.getElementById('app-video').value = '';
+        clearAppImageUpload();
+        setAppFormMode('add');
+    }
+
+    window.editorEditApp = function (index) {
+        const apps = getApps();
+        const app = apps[index];
+        if (!app) return;
+
+        editingAppIndex = index;
+
+        document.getElementById('app-title').value = app.title || '';
+        document.getElementById('app-link').value = app.link || '';
+        document.getElementById('app-video').value = app.video || '';
+
+        if (app.image) {
+            uploadedAppImageData = app.image;
+            const preview = document.getElementById('app-image-preview');
+            const placeholder = document.getElementById('app-upload-placeholder');
+            if (preview) {
+                preview.src = app.image;
+                preview.style.display = 'block';
+            }
+            if (placeholder) placeholder.style.display = 'none';
+        } else {
+            clearAppImageUpload();
+        }
+
+        setAppFormMode('edit');
+        renderAppsList();
+
+        const appsForm = document.querySelector('#apps-tab .add-form');
+        if (appsForm) appsForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    function initAppImageUpload() {
+        const uploadArea = document.getElementById('app-image-upload-area');
+        const fileInput = document.getElementById('app-image');
+        const preview = document.getElementById('app-image-preview');
+        const placeholder = document.getElementById('app-upload-placeholder');
+        if (!uploadArea || !fileInput) return;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image must be under 5MB');
+                return;
+            }
+
+            appImageReady = false;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const compressed = await compressImage(event.target.result, 400, 0.7);
+                uploadedAppImageData = compressed;
+                appImageReady = true;
+                if (preview) {
+                    preview.src = compressed;
+                    preview.style.display = 'block';
+                }
+                if (placeholder) placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function clearAppImageUpload() {
+        uploadedAppImageData = '';
+        const preview = document.getElementById('app-image-preview');
+        const placeholder = document.getElementById('app-upload-placeholder');
+        const fileInput = document.getElementById('app-image');
+        if (preview) { preview.style.display = 'none'; preview.src = ''; }
+        if (placeholder) placeholder.style.display = '';
+        if (fileInput) fileInput.value = '';
+    }
+
+    function addOrUpdateApp() {
+        if (!appImageReady) {
+            showToast('Image is still processing, please wait...');
+            return;
+        }
+
+        const title = document.getElementById('app-title').value.trim();
+        const link = document.getElementById('app-link').value.trim();
+        const video = document.getElementById('app-video').value.trim();
+
+        if (!title) {
+            showToast('App title is required!');
+            return;
+        }
+
+        const apps = getApps();
+
+        if (editingAppIndex >= 0 && editingAppIndex < apps.length) {
+            apps[editingAppIndex].title = title;
+            apps[editingAppIndex].link = link;
+            apps[editingAppIndex].video = video;
+            apps[editingAppIndex].image = uploadedAppImageData || apps[editingAppIndex].image;
+            if (!saveApps(apps)) return;
+            clearAppForm();
+            renderAppsList();
+            showToast('App updated!');
+        } else {
+            apps.push({ title, link, video, image: uploadedAppImageData, id: Date.now() });
+            if (!saveApps(apps)) return;
+            clearAppForm();
+            renderAppsList();
+            showToast('App added!');
+        }
+    }
+
+    window.editorDeleteApp = function (index) {
+        if (!confirm('Delete this app?')) return;
+        const apps = getApps();
+        apps.splice(index, 1);
+        saveApps(apps);
+        renderAppsList();
+        showToast('App deleted');
+    };
+
+    window.editorMoveApp = function (index, direction) {
+        const apps = getApps();
+        const newIndex = index + direction;
+        if (newIndex < 0 || newIndex >= apps.length) return;
+        [apps[index], apps[newIndex]] = [apps[newIndex], apps[index]];
+        saveApps(apps);
+        renderAppsList();
+    };
+
     // ---- Videos CRUD ----
     function renderVideosList() {
         const list = document.getElementById('videos-list');
@@ -478,6 +687,7 @@
             exportBtn.addEventListener('click', () => {
                 const data = {
                     games: getGames(),
+                    apps: getApps(),
                     videos: getVideos(),
                     exportedAt: new Date().toISOString()
                 };
@@ -509,9 +719,10 @@
 
         function buildSiteData() {
             const games = getGames();
+            const apps = getApps();
             const videos = getVideos();
-            if (games.length === 0 && videos.length === 0) return null;
-            return { games, videos, publishedAt: new Date().toISOString() };
+            if (games.length === 0 && apps.length === 0 && videos.length === 0) return null;
+            return { games, apps, videos, publishedAt: new Date().toISOString() };
         }
 
         // Download as file (fallback)
@@ -612,10 +823,14 @@
                         if (data.games && Array.isArray(data.games)) {
                             saveGames(data.games);
                         }
+                        if (data.apps && Array.isArray(data.apps)) {
+                            saveApps(data.apps);
+                        }
                         if (data.videos && Array.isArray(data.videos)) {
                             saveVideos(data.videos);
                         }
                         renderGamesList();
+                        renderAppsList();
                         renderVideosList();
                         showToast('Data imported successfully!');
                     } catch {
@@ -680,13 +895,18 @@
         initTabs();
         initSettings();
         initImageUpload();
+        initAppImageUpload();
 
         const addGameBtn = document.getElementById('add-game-btn');
         const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const addAppBtn = document.getElementById('add-app-btn');
+        const cancelAppEditBtn = document.getElementById('cancel-app-edit-btn');
         const addVideoBtn = document.getElementById('add-video-btn');
 
         if (addGameBtn) addGameBtn.addEventListener('click', addOrUpdateGame);
         if (cancelEditBtn) cancelEditBtn.addEventListener('click', clearForm);
+        if (addAppBtn) addAppBtn.addEventListener('click', addOrUpdateApp);
+        if (cancelAppEditBtn) cancelAppEditBtn.addEventListener('click', clearAppForm);
         if (addVideoBtn) addVideoBtn.addEventListener('click', addVideo);
 
         // Sync from server buttons
@@ -716,6 +936,34 @@
                 } finally {
                     syncGamesBtn.disabled = false;
                     syncGamesBtn.innerHTML = '&#8635; Sync from Server';
+                }
+            });
+        }
+
+        const syncAppsBtn = document.getElementById('sync-apps-btn');
+        if (syncAppsBtn) {
+            syncAppsBtn.addEventListener('click', async () => {
+                syncAppsBtn.disabled = true;
+                syncAppsBtn.textContent = 'Syncing...';
+                try {
+                    const resp = await fetch('data/site-data.json?' + Date.now());
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data.apps && data.apps.length > 0) {
+                            saveApps(data.apps);
+                            renderAppsList();
+                            showToast('Apps synced from server! (' + data.apps.length + ' apps)');
+                        } else {
+                            showToast('No apps found on server.');
+                        }
+                    } else {
+                        showToast('Failed to fetch site-data.json');
+                    }
+                } catch (e) {
+                    showToast('Sync error: ' + e.message);
+                } finally {
+                    syncAppsBtn.disabled = false;
+                    syncAppsBtn.innerHTML = '&#8635; Sync from Server';
                 }
             });
         }

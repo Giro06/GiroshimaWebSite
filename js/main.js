@@ -7,6 +7,7 @@
 
     // ---- Storage Keys ----
     const GAMES_KEY = 'giroshima_games';
+    const APPS_KEY = 'giroshima_apps';
     const VIDEOS_KEY = 'giroshima_videos';
 
     // ---- Site data loaded from data/site-data.json ----
@@ -32,6 +33,15 @@
         } catch {}
         // 2nd: site-data.json (published data from repo)
         if (siteData && siteData.games && siteData.games.length > 0) return siteData.games;
+        return [];
+    }
+
+    function getApps() {
+        try {
+            const stored = JSON.parse(localStorage.getItem(APPS_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.apps && siteData.apps.length > 0) return siteData.apps;
         return [];
     }
 
@@ -71,13 +81,21 @@
 
     // ---- Render Games ----
     function renderGames() {
-        const grid = document.getElementById('games-grid');
-        const empty = document.getElementById('games-empty');
+        renderCardGrid('games-grid', 'games-empty', getGames());
+    }
+
+    // ---- Render Apps ----
+    function renderApps() {
+        renderCardGrid('apps-grid', 'apps-empty', getApps());
+    }
+
+    // ---- Shared card grid renderer (games + apps) ----
+    function renderCardGrid(gridId, emptyId, items) {
+        const grid = document.getElementById(gridId);
+        const empty = document.getElementById(emptyId);
         if (!grid) return;
 
-        const games = getGames();
-
-        if (games.length === 0) {
+        if (items.length === 0) {
             grid.innerHTML = '';
             if (empty) empty.classList.add('visible');
             return;
@@ -85,7 +103,7 @@
 
         if (empty) empty.classList.remove('visible');
 
-        grid.innerHTML = games.map((game, i) => {
+        grid.innerHTML = items.map((game, i) => {
             const embedUrl = game.video ? getYouTubeEmbed(game.video) : null;
             return `
             <a href="${game.link ? escapeHtml(game.link) : '#'}" target="_blank" rel="noopener noreferrer" class="game-card" style="animation-delay: ${i * 0.1}s" ${embedUrl ? `data-video="${escapeHtml(embedUrl)}"` : ''}>
@@ -258,6 +276,7 @@
         // Load published site data, then render
         await loadSiteData();
         renderGames();
+        renderApps();
         renderVideos();
 
         // Delay scroll reveal to let initial animations finish
