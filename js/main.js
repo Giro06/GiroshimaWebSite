@@ -15,7 +15,7 @@
 
     async function loadSiteData() {
         try {
-            const resp = await fetch('data/site-data.json');
+            const resp = await fetch('data/site-data.json?' + Date.now(), { cache: 'no-store' });
             if (resp.ok) {
                 siteData = await resp.json();
             }
