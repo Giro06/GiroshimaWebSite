@@ -7,6 +7,7 @@
 
     // ---- Storage Keys ----
     const GAMES_KEY = 'giroshima_games';
+    const PCGAMES_KEY = 'giroshima_pcgames';
     const APPS_KEY = 'giroshima_apps';
     const PASSWORD_KEY = 'giroshima_admin_pw';
     const SESSION_KEY = 'giroshima_session';
@@ -41,6 +42,25 @@
     function saveGames(games) {
         try {
             localStorage.setItem(GAMES_KEY, JSON.stringify(games));
+            return true;
+        } catch (e) {
+            showToast('Storage full! Try using smaller images.');
+            return false;
+        }
+    }
+
+    function getPcGames() {
+        try {
+            const stored = JSON.parse(localStorage.getItem(PCGAMES_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.pcGames && siteData.pcGames.length > 0) return siteData.pcGames;
+        return [];
+    }
+
+    function savePcGames(pcGames) {
+        try {
+            localStorage.setItem(PCGAMES_KEY, JSON.stringify(pcGames));
             return true;
         } catch (e) {
             showToast('Storage full! Try using smaller images.');
@@ -119,6 +139,7 @@
         sessionStorage.setItem(SESSION_KEY, 'true');
         await loadSiteData();
         renderGamesList();
+        renderPcGamesList();
         renderAppsList();
         renderVideosList();
     }
@@ -386,6 +407,195 @@
         [games[index], games[newIndex]] = [games[newIndex], games[index]];
         saveGames(games);
         renderGamesList();
+    };
+
+    // ---- PC Games CRUD ----
+    let editingPcGameIndex = -1;
+    let uploadedPcGameImageData = '';
+    let pcGameImageReady = true;
+
+    function renderPcGamesList() {
+        const list = document.getElementById('pcgames-list');
+        if (!list) return;
+        const pcGames = getPcGames();
+
+        if (pcGames.length === 0) {
+            list.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:24px;">No PC games yet. Add your first PC game above!</p>';
+            return;
+        }
+
+        list.innerHTML = pcGames.map((game, i) => `
+            <div class="item-row${editingPcGameIndex === i ? ' editing' : ''}">
+                ${game.image
+                    ? `<img class="item-row-thumb" src="${escapeHtml(game.image)}" alt="${escapeHtml(game.title)}">`
+                    : `<div class="item-row-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">&#128421;</div>`
+                }
+                <div class="item-row-info">
+                    <div class="item-row-title">${escapeHtml(game.title)}</div>
+                    <div class="item-row-subtitle">${game.link ? escapeHtml(game.link) : 'No link'}${game.video ? ' &bull; Video' : ''}</div>
+                </div>
+                <div class="item-row-actions">
+                    <button class="btn-icon" onclick="editorEditPcGame(${i})" title="Edit">&#9998;</button>
+                    <button class="btn-icon" onclick="editorMovePcGame(${i}, -1)" title="Move up">&#8593;</button>
+                    <button class="btn-icon" onclick="editorMovePcGame(${i}, 1)" title="Move down">&#8595;</button>
+                    <button class="btn-icon delete" onclick="editorDeletePcGame(${i})" title="Delete">&#10005;</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function setPcGameFormMode(mode) {
+        const btn = document.getElementById('add-pcgame-btn');
+        const cancelBtn = document.getElementById('cancel-pcgame-edit-btn');
+        const formTitle = document.querySelector('#pcgames-tab .add-form h3');
+        if (!btn || !cancelBtn || !formTitle) return;
+        if (mode === 'edit') {
+            btn.textContent = 'Update PC Game';
+            cancelBtn.style.display = 'inline-block';
+            formTitle.textContent = 'Edit PC Game';
+        } else {
+            btn.textContent = 'Add PC Game';
+            cancelBtn.style.display = 'none';
+            formTitle.textContent = 'Add New PC Game';
+            editingPcGameIndex = -1;
+        }
+    }
+
+    function clearPcGameForm() {
+        document.getElementById('pcgame-title').value = '';
+        document.getElementById('pcgame-link').value = '';
+        document.getElementById('pcgame-video').value = '';
+        clearPcGameImageUpload();
+        setPcGameFormMode('add');
+    }
+
+    window.editorEditPcGame = function (index) {
+        const pcGames = getPcGames();
+        const game = pcGames[index];
+        if (!game) return;
+
+        editingPcGameIndex = index;
+
+        document.getElementById('pcgame-title').value = game.title || '';
+        document.getElementById('pcgame-link').value = game.link || '';
+        document.getElementById('pcgame-video').value = game.video || '';
+
+        if (game.image) {
+            uploadedPcGameImageData = game.image;
+            const preview = document.getElementById('pcgame-image-preview');
+            const placeholder = document.getElementById('pcgame-upload-placeholder');
+            if (preview) {
+                preview.src = game.image;
+                preview.style.display = 'block';
+            }
+            if (placeholder) placeholder.style.display = 'none';
+        } else {
+            clearPcGameImageUpload();
+        }
+
+        setPcGameFormMode('edit');
+        renderPcGamesList();
+
+        const pcGamesForm = document.querySelector('#pcgames-tab .add-form');
+        if (pcGamesForm) pcGamesForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    function initPcGameImageUpload() {
+        const uploadArea = document.getElementById('pcgame-image-upload-area');
+        const fileInput = document.getElementById('pcgame-image');
+        const preview = document.getElementById('pcgame-image-preview');
+        const placeholder = document.getElementById('pcgame-upload-placeholder');
+        if (!uploadArea || !fileInput) return;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image must be under 5MB');
+                return;
+            }
+
+            pcGameImageReady = false;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                // Full-row 16:9 cards are large, keep a higher resolution
+                const compressed = await compressImage(event.target.result, 1280, 0.7);
+                uploadedPcGameImageData = compressed;
+                pcGameImageReady = true;
+                if (preview) {
+                    preview.src = compressed;
+                    preview.style.display = 'block';
+                }
+                if (placeholder) placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function clearPcGameImageUpload() {
+        uploadedPcGameImageData = '';
+        const preview = document.getElementById('pcgame-image-preview');
+        const placeholder = document.getElementById('pcgame-upload-placeholder');
+        const fileInput = document.getElementById('pcgame-image');
+        if (preview) { preview.style.display = 'none'; preview.src = ''; }
+        if (placeholder) placeholder.style.display = '';
+        if (fileInput) fileInput.value = '';
+    }
+
+    function addOrUpdatePcGame() {
+        if (!pcGameImageReady) {
+            showToast('Image is still processing, please wait...');
+            return;
+        }
+
+        const title = document.getElementById('pcgame-title').value.trim();
+        const link = document.getElementById('pcgame-link').value.trim();
+        const video = document.getElementById('pcgame-video').value.trim();
+
+        if (!title) {
+            showToast('Game title is required!');
+            return;
+        }
+
+        const pcGames = getPcGames();
+
+        if (editingPcGameIndex >= 0 && editingPcGameIndex < pcGames.length) {
+            pcGames[editingPcGameIndex].title = title;
+            pcGames[editingPcGameIndex].link = link;
+            pcGames[editingPcGameIndex].video = video;
+            pcGames[editingPcGameIndex].image = uploadedPcGameImageData || pcGames[editingPcGameIndex].image;
+            if (!savePcGames(pcGames)) return;
+            clearPcGameForm();
+            renderPcGamesList();
+            showToast('PC game updated!');
+        } else {
+            pcGames.push({ title, link, video, image: uploadedPcGameImageData, id: Date.now() });
+            if (!savePcGames(pcGames)) return;
+            clearPcGameForm();
+            renderPcGamesList();
+            showToast('PC game added!');
+        }
+    }
+
+    window.editorDeletePcGame = function (index) {
+        if (!confirm('Delete this PC game?')) return;
+        const pcGames = getPcGames();
+        pcGames.splice(index, 1);
+        savePcGames(pcGames);
+        renderPcGamesList();
+        showToast('PC game deleted');
+    };
+
+    window.editorMovePcGame = function (index, direction) {
+        const pcGames = getPcGames();
+        const newIndex = index + direction;
+        if (newIndex < 0 || newIndex >= pcGames.length) return;
+        [pcGames[index], pcGames[newIndex]] = [pcGames[newIndex], pcGames[index]];
+        savePcGames(pcGames);
+        renderPcGamesList();
     };
 
     // ---- Apps CRUD ----
@@ -687,6 +897,7 @@
             exportBtn.addEventListener('click', () => {
                 const data = {
                     games: getGames(),
+                    pcGames: getPcGames(),
                     apps: getApps(),
                     videos: getVideos(),
                     exportedAt: new Date().toISOString()
@@ -719,10 +930,11 @@
 
         function buildSiteData() {
             const games = getGames();
+            const pcGames = getPcGames();
             const apps = getApps();
             const videos = getVideos();
-            if (games.length === 0 && apps.length === 0 && videos.length === 0) return null;
-            return { games, apps, videos, publishedAt: new Date().toISOString() };
+            if (games.length === 0 && pcGames.length === 0 && apps.length === 0 && videos.length === 0) return null;
+            return { games, pcGames, apps, videos, publishedAt: new Date().toISOString() };
         }
 
         // Download as file (fallback)
@@ -823,6 +1035,9 @@
                         if (data.games && Array.isArray(data.games)) {
                             saveGames(data.games);
                         }
+                        if (data.pcGames && Array.isArray(data.pcGames)) {
+                            savePcGames(data.pcGames);
+                        }
                         if (data.apps && Array.isArray(data.apps)) {
                             saveApps(data.apps);
                         }
@@ -830,6 +1045,7 @@
                             saveVideos(data.videos);
                         }
                         renderGamesList();
+                        renderPcGamesList();
                         renderAppsList();
                         renderVideosList();
                         showToast('Data imported successfully!');
@@ -895,16 +1111,21 @@
         initTabs();
         initSettings();
         initImageUpload();
+        initPcGameImageUpload();
         initAppImageUpload();
 
         const addGameBtn = document.getElementById('add-game-btn');
         const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const addPcGameBtn = document.getElementById('add-pcgame-btn');
+        const cancelPcGameEditBtn = document.getElementById('cancel-pcgame-edit-btn');
         const addAppBtn = document.getElementById('add-app-btn');
         const cancelAppEditBtn = document.getElementById('cancel-app-edit-btn');
         const addVideoBtn = document.getElementById('add-video-btn');
 
         if (addGameBtn) addGameBtn.addEventListener('click', addOrUpdateGame);
         if (cancelEditBtn) cancelEditBtn.addEventListener('click', clearForm);
+        if (addPcGameBtn) addPcGameBtn.addEventListener('click', addOrUpdatePcGame);
+        if (cancelPcGameEditBtn) cancelPcGameEditBtn.addEventListener('click', clearPcGameForm);
         if (addAppBtn) addAppBtn.addEventListener('click', addOrUpdateApp);
         if (cancelAppEditBtn) cancelAppEditBtn.addEventListener('click', clearAppForm);
         if (addVideoBtn) addVideoBtn.addEventListener('click', addVideo);
@@ -936,6 +1157,34 @@
                 } finally {
                     syncGamesBtn.disabled = false;
                     syncGamesBtn.innerHTML = '&#8635; Sync from Server';
+                }
+            });
+        }
+
+        const syncPcGamesBtn = document.getElementById('sync-pcgames-btn');
+        if (syncPcGamesBtn) {
+            syncPcGamesBtn.addEventListener('click', async () => {
+                syncPcGamesBtn.disabled = true;
+                syncPcGamesBtn.textContent = 'Syncing...';
+                try {
+                    const resp = await fetch('data/site-data.json?' + Date.now());
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data.pcGames && data.pcGames.length > 0) {
+                            savePcGames(data.pcGames);
+                            renderPcGamesList();
+                            showToast('PC games synced from server! (' + data.pcGames.length + ' games)');
+                        } else {
+                            showToast('No PC games found on server.');
+                        }
+                    } else {
+                        showToast('Failed to fetch site-data.json');
+                    }
+                } catch (e) {
+                    showToast('Sync error: ' + e.message);
+                } finally {
+                    syncPcGamesBtn.disabled = false;
+                    syncPcGamesBtn.innerHTML = '&#8635; Sync from Server';
                 }
             });
         }

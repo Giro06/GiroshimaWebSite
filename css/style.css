@@ -451,6 +451,15 @@ img {
     gap: 28px;
 }
 
+/* PC Games – each card fills the whole row with a 16:9 ratio */
+.games-grid.pc-games-grid {
+    grid-template-columns: 1fr;
+}
+
+.pc-games-grid .game-card {
+    aspect-ratio: 16 / 9;
+}
+
 .game-card {
     display: block;
     position: relative;
