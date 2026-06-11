@@ -7,6 +7,7 @@
 
     // ---- Storage Keys ----
     const GAMES_KEY = 'giroshima_games';
+    const PCGAMES_KEY = 'giroshima_pcgames';
     const APPS_KEY = 'giroshima_apps';
     const VIDEOS_KEY = 'giroshima_videos';
 
@@ -33,6 +34,15 @@
         } catch {}
         // 2nd: site-data.json (published data from repo)
         if (siteData && siteData.games && siteData.games.length > 0) return siteData.games;
+        return [];
+    }
+
+    function getPcGames() {
+        try {
+            const stored = JSON.parse(localStorage.getItem(PCGAMES_KEY));
+            if (stored && stored.length > 0) return stored;
+        } catch {}
+        if (siteData && siteData.pcGames && siteData.pcGames.length > 0) return siteData.pcGames;
         return [];
     }
 
@@ -82,6 +92,11 @@
     // ---- Render Games ----
     function renderGames() {
         renderCardGrid('games-grid', 'games-empty', getGames());
+    }
+
+    // ---- Render PC Games ----
+    function renderPcGames() {
+        renderCardGrid('pc-games-grid', 'pc-games-empty', getPcGames());
     }
 
     // ---- Render Apps ----
@@ -276,6 +291,7 @@
         // Load published site data, then render
         await loadSiteData();
         renderGames();
+        renderPcGames();
         renderApps();
         renderVideos();
 

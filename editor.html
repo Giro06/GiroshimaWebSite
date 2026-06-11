@@ -59,6 +59,7 @@
                 <!-- Tabs -->
                 <div class="editor-tabs">
                     <button class="editor-tab active" data-tab="games-tab">Games</button>
+                    <button class="editor-tab" data-tab="pcgames-tab">PC Games</button>
                     <button class="editor-tab" data-tab="apps-tab">Apps</button>
                     <button class="editor-tab" data-tab="videos-tab">Videos</button>
                     <button class="editor-tab" data-tab="settings-tab">Settings</button>
@@ -103,6 +104,48 @@
                     </div>
                     <div class="items-list" id="games-list">
                         <!-- Games list rendered here -->
+                    </div>
+                </div>
+
+                <!-- PC Games Tab -->
+                <div class="tab-content" id="pcgames-tab">
+                    <div class="add-form">
+                        <h3>Add New PC Game</h3>
+                        <div class="form-group">
+                            <label for="pcgame-title">Game Title *</label>
+                            <input type="text" id="pcgame-title" placeholder="Enter game title">
+                        </div>
+                        <div class="form-group">
+                            <label for="pcgame-link">Game Link (URL)</label>
+                            <input type="url" id="pcgame-link" placeholder="https://store.steampowered.com/...">
+                        </div>
+                        <div class="form-group">
+                            <label for="pcgame-video">Video URL (YouTube - hover'da oynar)</label>
+                            <input type="url" id="pcgame-video" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        <div class="form-group">
+                            <label for="pcgame-image">Game Image (16:9 yatay g&ouml;rsel &ouml;nerilir)</label>
+                            <div class="image-upload-area" id="pcgame-image-upload-area">
+                                <input type="file" id="pcgame-image" accept="image/*" style="display:none;">
+                                <div class="upload-placeholder" id="pcgame-upload-placeholder">
+                                    <span style="font-size:2rem;">&#128247;</span>
+                                    <span>Click to upload image</span>
+                                </div>
+                                <img id="pcgame-image-preview" class="image-preview" style="display:none;" alt="Preview">
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px;">
+                            <button type="button" class="form-btn" id="add-pcgame-btn" style="flex:1;">Add PC Game</button>
+                            <button type="button" class="form-btn" id="cancel-pcgame-edit-btn" style="flex:0 0 auto; background:linear-gradient(135deg, #444, #666); display:none;">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                        <h3 style="font-family:var(--font-display); font-size:1rem; color:var(--text-secondary); margin:0;">Your PC Games</h3>
+                        <button type="button" class="form-btn" id="sync-pcgames-btn" style="padding:8px 16px; font-size:0.8rem; background:linear-gradient(135deg, #4a9eff, #2d7dd2);">&#8635; Sync from Server</button>
+                    </div>
+                    <div class="items-list" id="pcgames-list">
+                        <!-- PC games list rendered here -->
                     </div>
                 </div>
 
@@ -241,7 +284,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Giroshima. All rights reserved. <span style="color:var(--text-muted); font-size:0.75rem;">v1.1.0</span></p>
+                <p>&copy; 2026 Giroshima. All rights reserved. <span style="color:var(--text-muted); font-size:0.75rem;">v1.2.0</span></p>
             </div>
         </div>
     </footer>
