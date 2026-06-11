@@ -9,7 +9,6 @@
     const GAMES_KEY = 'giroshima_games';
     const PCGAMES_KEY = 'giroshima_pcgames';
     const APPS_KEY = 'giroshima_apps';
-    const VIDEOS_KEY = 'giroshima_videos';
 
     // ---- Site data loaded from data/site-data.json ----
     let siteData = null;
@@ -52,15 +51,6 @@
             if (stored && stored.length > 0) return stored;
         } catch {}
         if (siteData && siteData.apps && siteData.apps.length > 0) return siteData.apps;
-        return [];
-    }
-
-    function getVideos() {
-        try {
-            const stored = JSON.parse(localStorage.getItem(VIDEOS_KEY));
-            if (stored && stored.length > 0) return stored;
-        } catch {}
-        if (siteData && siteData.videos && siteData.videos.length > 0) return siteData.videos;
         return [];
     }
 
@@ -177,42 +167,6 @@
         });
     }
 
-    // ---- Render Videos ----
-    function renderVideos() {
-        const grid = document.getElementById('videos-grid');
-        const empty = document.getElementById('videos-empty');
-        if (!grid) return;
-
-        const videos = getVideos();
-
-        if (videos.length === 0) {
-            grid.innerHTML = '';
-            if (empty) empty.classList.add('visible');
-            return;
-        }
-
-        if (empty) empty.classList.remove('visible');
-
-        grid.innerHTML = videos.map((video, i) => {
-            const embedUrl = getYouTubeEmbed(video.url);
-            return `
-                <div class="video-card" style="animation-delay: ${i * 0.1}s">
-                    ${embedUrl
-                        ? `<div class="video-wrapper">
-                            <iframe src="${escapeHtml(embedUrl)}" title="${escapeHtml(video.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-                           </div>`
-                        : `<div class="video-wrapper">
-                            <a href="${escapeHtml(video.url)}" target="_blank" rel="noopener noreferrer" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg-secondary);color:var(--accent);font-size:3rem;">&#9654;</a>
-                           </div>`
-                    }
-                    <div class="video-card-body">
-                        <h3 class="video-card-title">${escapeHtml(video.title)}</h3>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
     // ---- Escape HTML ----
     function escapeHtml(str) {
         if (!str) return '';
@@ -293,7 +247,6 @@
         renderGames();
         renderPcGames();
         renderApps();
-        renderVideos();
 
         // Delay scroll reveal to let initial animations finish
         setTimeout(initScrollReveal, 100);
