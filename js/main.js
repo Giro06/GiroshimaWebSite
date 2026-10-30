@@ -10,6 +10,8 @@
     const PCGAMES_KEY = 'giroshima_pcgames';
     const APPS_KEY = 'giroshima_apps';
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // ---- Site data loaded from data/site-data.json ----
     let siteData = null;
 
@@ -25,73 +27,92 @@
     }
 
     // ---- Helpers ----
-    function getGames() {
-        // 1st: localStorage (editor preview)
+    // 1st: localStorage (editor preview), 2nd: site-data.json (published data from repo)
+    function getItems(storageKey, dataKey) {
         try {
-            const stored = JSON.parse(localStorage.getItem(GAMES_KEY));
+            const stored = JSON.parse(localStorage.getItem(storageKey));
             if (stored && stored.length > 0) return stored;
         } catch {}
-        // 2nd: site-data.json (published data from repo)
-        if (siteData && siteData.games && siteData.games.length > 0) return siteData.games;
+        if (siteData && siteData[dataKey] && siteData[dataKey].length > 0) return siteData[dataKey];
         return [];
     }
 
-    function getPcGames() {
-        try {
-            const stored = JSON.parse(localStorage.getItem(PCGAMES_KEY));
-            if (stored && stored.length > 0) return stored;
-        } catch {}
-        if (siteData && siteData.pcGames && siteData.pcGames.length > 0) return siteData.pcGames;
-        return [];
-    }
-
-    function getApps() {
-        try {
-            const stored = JSON.parse(localStorage.getItem(APPS_KEY));
-            if (stored && stored.length > 0) return stored;
-        } catch {}
-        if (siteData && siteData.apps && siteData.apps.length > 0) return siteData.apps;
-        return [];
-    }
-
-    // ---- Extract YouTube Embed URL ----
-    function getYouTubeEmbed(url) {
+    // ---- Extract YouTube Video ID ----
+    function getYouTubeId(url) {
         if (!url) return null;
-        let videoId = null;
         try {
             const urlObj = new URL(url);
             if (urlObj.hostname.includes('youtu.be')) {
-                videoId = urlObj.pathname.slice(1).split('/')[0];
-            } else if (urlObj.hostname.includes('youtube.com')) {
-                videoId = urlObj.searchParams.get('v');
-                if (!videoId) {
-                    // Handle /embed/ID, /shorts/ID, /live/ID, /v/ID formats
-                    const match = urlObj.pathname.match(/\/(embed|shorts|live|v)\/([^/?]+)/);
-                    if (match) videoId = match[2];
-                }
+                return urlObj.pathname.slice(1).split('/')[0] || null;
             }
-        } catch {
-            return null;
-        }
-        if (videoId) {
-            return `https://www.youtube.com/embed/${videoId}`;
-        }
+            if (urlObj.hostname.includes('youtube.com')) {
+                const v = urlObj.searchParams.get('v');
+                if (v) return v;
+                // Handle /embed/ID, /shorts/ID, /live/ID, /v/ID formats
+                const match = urlObj.pathname.match(/\/(embed|shorts|live|v)\/([^/?]+)/);
+                if (match) return match[2];
+            }
+        } catch {}
         return null;
     }
 
-    // ---- Render Games ----
-    function renderGames() {
-        renderCardGrid('games-grid', 'games-empty', getGames());
+    function getYouTubeEmbed(url) {
+        const id = getYouTubeId(url);
+        return id ? `https://www.youtube.com/embed/${id}` : null;
     }
 
-    // ---- Render PC Games ----
-    function renderPcGames() {
-        renderCardGrid('pc-games-grid', 'pc-games-empty', getPcGames());
+    // ---- Store label from link host ----
+    function getPlatform(link) {
+        if (!link) return null;
+        let host = '';
+        try { host = new URL(link).hostname; } catch { return null; }
+        if (host.includes('steampowered.com')) return { name: 'Steam', cta: 'Wishlist on Steam' };
+        if (host.includes('apps.apple.com')) return { name: 'App Store', cta: 'Get on the App Store' };
+        if (host.includes('play.google.com')) return { name: 'Google Play', cta: 'Get on Google Play' };
+        if (host.includes('itch.io')) return { name: 'itch.io', cta: 'Play on itch.io' };
+        if (host.includes('crazygames.com')) return { name: 'CrazyGames', cta: 'Play on CrazyGames' };
+        return { name: 'Web', cta: 'Open' };
     }
 
-    // ---- Render Apps ----
-    function renderApps() {
-        renderCardGrid('apps-grid', 'apps-empty', getApps());
+    // ---- Hero: first PC game, trailer playing behind ----
+    function renderHero(featured) {
+        if (!featured) return;
+        const media = document.getElementById('hero-media');
+        const platform = getPlatform(featured.link);
+
+        document.getElementById('hero-eyebrow').textContent =
+            platform && platform.name === 'Steam' ? 'Featured · On Steam' : 'Featured';
+        document.getElementById('hero-title').textContent = featured.title;
+        document.getElementById('hero-tagline').textContent = 'A new game from Giroshima.';
+
+        const cta = document.getElementById('hero-cta');
+        const videoId = getYouTubeId(featured.video);
+        cta.innerHTML = `
+            ${featured.link ? `<a href="${escapeHtml(featured.link)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">${escapeHtml(platform ? platform.cta : 'Open')}</a>` : ''}
+            ${videoId ? `<a href="https://www.youtube.com/watch?v=${escapeHtml(videoId)}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Watch trailer</a>` : ''}
+        `;
+
+        if (featured.image) {
+            const img = document.createElement('img');
+            img.src = featured.image;
+            img.alt = '';
+            img.className = 'hero-poster';
+            media.appendChild(img);
+        }
+
+        // Background trailer: muted loop, poster stays visible until the iframe loads
+        if (videoId && !reducedMotion) {
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&playsinline=1&modestbranding=1&rel=0`;
+            iframe.allow = 'autoplay; encrypted-media';
+            iframe.tabIndex = -1;
+            iframe.setAttribute('aria-hidden', 'true');
+            iframe.className = 'hero-video';
+            iframe.addEventListener('load', () => {
+                setTimeout(() => iframe.classList.add('ready'), 1200);
+            });
+            media.appendChild(iframe);
+        }
     }
 
     // ---- Shared card grid renderer (games + apps) ----
@@ -108,63 +129,52 @@
 
         if (empty) empty.classList.remove('visible');
 
-        grid.innerHTML = items.map((game, i) => {
+        grid.innerHTML = items.map((game) => {
             const embedUrl = game.video ? getYouTubeEmbed(game.video) : null;
+            const platform = getPlatform(game.link);
             return `
-            <a href="${game.link ? escapeHtml(game.link) : '#'}" target="_blank" rel="noopener noreferrer" class="game-card" style="animation-delay: ${i * 0.1}s" ${embedUrl ? `data-video="${escapeHtml(embedUrl)}"` : ''}>
-                <div class="game-card-image">
+            <a href="${game.link ? escapeHtml(game.link) : '#'}" target="_blank" rel="noopener noreferrer" class="game-card" ${embedUrl ? `data-video="${escapeHtml(embedUrl)}"` : ''}>
+                <div class="game-card-media">
                     ${game.image
                         ? `<img src="${game.image}" alt="${escapeHtml(game.title)}" loading="lazy">`
-                        : `<div class="game-card-placeholder">&#127918;</div>`
+                        : `<div class="game-card-placeholder">${escapeHtml(game.title)}</div>`
                     }
+                    ${embedUrl ? `<div class="game-card-video"></div>` : ''}
                 </div>
-                ${embedUrl ? `<div class="game-card-video"></div>` : ''}
-                <div class="game-card-overlay">
+                <div class="game-card-info">
                     <h3 class="game-card-title">${escapeHtml(game.title)}</h3>
-                    <span class="game-card-btn">Play Now</span>
+                    ${platform ? `<span class="game-card-platform">${escapeHtml(platform.name)}</span>` : ''}
                 </div>
             </a>
         `}).join('');
 
-        // Hover video logic – reveal from mouse position
-        grid.querySelectorAll('.game-card[data-video]').forEach(card => {
-            let hoverTimeout;
-            card.addEventListener('mouseenter', (e) => {
-                const rect = card.getBoundingClientRect();
-                const px = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-                const py = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-
-                hoverTimeout = setTimeout(() => {
+        // Hover video: fade a muted autoplay preview over the cover
+        if (!reducedMotion) {
+            grid.querySelectorAll('.game-card[data-video]').forEach(card => {
+                let hoverTimeout;
+                card.addEventListener('mouseenter', () => {
+                    hoverTimeout = setTimeout(() => {
+                        const videoContainer = card.querySelector('.game-card-video');
+                        if (videoContainer && !videoContainer.querySelector('iframe')) {
+                            const iframe = document.createElement('iframe');
+                            iframe.src = card.dataset.video + '?autoplay=1&mute=1&controls=0&loop=1&playsinline=1';
+                            iframe.allow = 'autoplay; encrypted-media';
+                            iframe.tabIndex = -1;
+                            iframe.addEventListener('load', () => videoContainer.classList.add('active'));
+                            videoContainer.appendChild(iframe);
+                        }
+                    }, 350);
+                });
+                card.addEventListener('mouseleave', () => {
+                    clearTimeout(hoverTimeout);
                     const videoContainer = card.querySelector('.game-card-video');
-                    if (videoContainer && !videoContainer.querySelector('iframe')) {
-                        // Set clip-path origin to mouse entry point
-                        videoContainer.style.clipPath = `circle(0% at ${px}% ${py}%)`;
-                        const iframe = document.createElement('iframe');
-                        iframe.src = card.dataset.video + '?autoplay=1&mute=1&controls=0&loop=1&playsinline=1';
-                        iframe.allow = 'autoplay; encrypted-media';
-                        iframe.setAttribute('loading', 'lazy');
-                        videoContainer.appendChild(iframe);
-                        // Trigger reflow then animate open
-                        void videoContainer.offsetWidth;
-                        videoContainer.style.clipPath = `circle(150% at ${px}% ${py}%)`;
-                        videoContainer.classList.add('active');
+                    if (videoContainer) {
+                        videoContainer.classList.remove('active');
+                        setTimeout(() => { videoContainer.innerHTML = ''; }, 300);
                     }
-                }, 400);
+                });
             });
-            card.addEventListener('mouseleave', (e) => {
-                clearTimeout(hoverTimeout);
-                const videoContainer = card.querySelector('.game-card-video');
-                if (videoContainer) {
-                    const rect = card.getBoundingClientRect();
-                    const px = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-                    const py = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-                    // Close toward mouse exit point
-                    videoContainer.style.clipPath = `circle(0% at ${px}% ${py}%)`;
-                    videoContainer.classList.remove('active');
-                    setTimeout(() => { videoContainer.innerHTML = ''; videoContainer.style.clipPath = ''; }, 500);
-                }
-            });
-        });
+        }
     }
 
     // ---- Escape HTML ----
@@ -175,20 +185,15 @@
         return div.innerHTML;
     }
 
-    // ---- Navbar Scroll Effect ----
+    // ---- Navbar Scroll Effect + Mobile Menu ----
     function initNavbar() {
         const navbar = document.querySelector('.navbar');
         if (!navbar) return;
 
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+        const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 40);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
 
-        // Mobile menu toggle
         const menuBtn = document.querySelector('.mobile-menu-btn');
         const navLinks = document.querySelector('.nav-links');
 
@@ -208,31 +213,21 @@
         }
     }
 
-    // ---- Smooth Scroll for Anchor Links ----
-    function initSmoothScroll() {
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-    }
-
     // ---- Scroll Reveal Animation ----
     function initScrollReveal() {
+        if (reducedMotion) return;
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.section-title, .section-subtitle, .game-card, .video-card').forEach(el => {
+        document.querySelectorAll('.section-head, .game-card').forEach((el, i) => {
             el.classList.add('reveal');
+            el.style.transitionDelay = `${(i % 4) * 60}ms`;
             observer.observe(el);
         });
     }
@@ -240,16 +235,22 @@
     // ---- Init ----
     async function init() {
         initNavbar();
-        initSmoothScroll();
 
-        // Load published site data, then render
+        // Homepage only; legal pages just need the navbar
+        if (!document.getElementById('games-grid')) return;
+
         await loadSiteData();
-        renderGames();
-        renderPcGames();
-        renderApps();
 
-        // Delay scroll reveal to let initial animations finish
-        setTimeout(initScrollReveal, 100);
+        const pcGames = getItems(PCGAMES_KEY, 'pcGames');
+        renderHero(pcGames[0]);
+        if (pcGames.length > 1) {
+            document.getElementById('pc-games').hidden = false;
+            renderCardGrid('pc-games-grid', null, pcGames.slice(1));
+        }
+        renderCardGrid('games-grid', 'games-empty', getItems(GAMES_KEY, 'games'));
+        renderCardGrid('apps-grid', 'apps-empty', getItems(APPS_KEY, 'apps'));
+
+        initScrollReveal();
     }
 
     if (document.readyState === 'loading') {

@@ -4,27 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giroshima - Games</title>
-    <meta name="description" content="Giroshima - Discover amazing indie games">
+    <meta name="description" content="Giroshima is an independent game studio making PC, mobile and web games.">
+    <meta name="theme-color" content="#08090b">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
-    <!-- Animated background particles -->
-    <canvas id="particles-canvas"></canvas>
-
-
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">
-                <span class="logo-icon">&#9670;</span>
-                <span class="logo-text">GIROSHIMA</span>
-            </a>
+            <a href="index.html" class="logo">GIROSHIMA</a>
             <ul class="nav-links">
-                <li><a href="#pc-games" class="nav-link active">Games</a></li>
+                <li><a href="#games" class="nav-link">Games</a></li>
                 <li><a href="#apps" class="nav-link">Apps</a></li>
                 <li><a href="terms.html" class="nav-link">Terms</a></li>
                 <li><a href="privacy.html" class="nav-link">Privacy</a></li>
@@ -32,108 +26,60 @@
             <button class="mobile-menu-btn" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
-                <span></span>
             </button>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="hero">
+    <!-- Hero: featured PC game, filled from site-data.json -->
+    <header class="hero" id="hero">
+        <div class="hero-media" id="hero-media"></div>
+        <div class="hero-shade"></div>
         <div class="hero-content">
-            <h1 class="hero-title">
-                <span class="title-line">GIRO</span><span class="title-line accent">SHIMA</span>
-            </h1>
-            <p class="hero-subtitle">Game Developer</p>
-            <div class="hero-cta">
-                <a href="#pc-games" class="btn btn-primary">Explore Games</a>
+            <p class="eyebrow" id="hero-eyebrow">Independent game studio</p>
+            <h1 class="hero-title" id="hero-title">Giroshima</h1>
+            <p class="hero-tagline" id="hero-tagline">We make games for every screen.</p>
+            <div class="hero-cta" id="hero-cta">
+                <a href="#games" class="btn btn-primary">Explore games</a>
             </div>
         </div>
-        <!-- Mini-games Left Column -->
-        <div class="hero-minigames-group hero-minigames-left">
-            <div class="hero-minigame">
-                <canvas id="snake-canvas" width="160" height="120"></canvas>
-                <span class="minigame-label">Snake</span>
-            </div>
-            <div class="hero-minigame">
-                <canvas id="pong-canvas" width="160" height="120"></canvas>
-                <span class="minigame-label">Pong</span>
-            </div>
-            <div class="hero-minigame">
-                <canvas id="brickbreaker-canvas" width="160" height="120"></canvas>
-                <span class="minigame-label">Brick Breaker</span>
-            </div>
-        </div>
-        <!-- Mini-games Right Column -->
-        <div class="hero-minigames-group hero-minigames-right">
-            <div class="hero-minigame">
-                <canvas id="tetris-canvas" width="120" height="160"></canvas>
-                <span class="minigame-label">Tetris</span>
-            </div>
-            <div class="hero-minigame">
-                <canvas id="memory-canvas" width="160" height="120"></canvas>
-                <span class="minigame-label">Memory</span>
-            </div>
-            <div class="hero-minigame">
-                <canvas id="tictactoe-canvas" width="130" height="130"></canvas>
-                <span class="minigame-label">Tic Tac Toe</span>
-            </div>
-        </div>
-        <div class="hero-glow"></div>
+        <a href="#games" class="scroll-hint" aria-label="Scroll to games">Scroll</a>
     </header>
 
-    <!-- PC Games Section -->
-    <section id="pc-games" class="section pc-games-section">
+    <!-- More PC Games (anything after the featured one) -->
+    <section id="pc-games" class="section" hidden>
         <div class="container">
-            <h2 class="section-title">
-                <span class="title-decoration"></span>
-                PC Games
-                <span class="title-decoration"></span>
-            </h2>
-            <p class="section-subtitle">Bigger worlds, bigger screens</p>
-            <div class="games-grid pc-games-grid" id="pc-games-grid">
-                <!-- PC games will be loaded dynamically -->
+            <div class="section-head">
+                <h2 class="section-title">On Steam</h2>
+                <p class="section-subtitle">Bigger worlds, bigger screens</p>
             </div>
-            <div class="empty-state" id="pc-games-empty">
-                <div class="empty-icon">&#128421;</div>
-                <p>PC games coming soon! Stay tuned.</p>
-            </div>
+            <div class="games-grid wide-grid" id="pc-games-grid"></div>
         </div>
     </section>
 
     <!-- Games Section -->
-    <section id="games" class="section games-section">
+    <section id="games" class="section">
         <div class="container">
-            <h2 class="section-title">
-                <span class="title-decoration"></span>
-                Our Games
-                <span class="title-decoration"></span>
-            </h2>
-            <p class="section-subtitle">Check out our latest creations</p>
-            <div class="games-grid" id="games-grid">
-                <!-- Games will be loaded dynamically from localStorage -->
+            <div class="section-head">
+                <h2 class="section-title">Games</h2>
+                <p class="section-subtitle">Mobile and web. Hover to watch.</p>
             </div>
+            <div class="games-grid" id="games-grid"></div>
             <div class="empty-state" id="games-empty">
-                <div class="empty-icon">&#127918;</div>
-                <p>Games coming soon! Stay tuned.</p>
+                <p>Games coming soon.</p>
             </div>
         </div>
     </section>
 
     <!-- Apps Section -->
-    <section id="apps" class="section apps-section">
+    <section id="apps" class="section">
         <div class="container">
-            <h2 class="section-title">
-                <span class="title-decoration"></span>
-                Our Apps
-                <span class="title-decoration"></span>
-            </h2>
-            <p class="section-subtitle">Beyond games &mdash; tools and utilities we build</p>
-            <div class="games-grid" id="apps-grid">
-                <!-- Apps will be loaded dynamically -->
+            <div class="section-head">
+                <h2 class="section-title">Apps</h2>
+                <p class="section-subtitle">Tools we build when we're not making games</p>
             </div>
+            <div class="games-grid apps-grid" id="apps-grid"></div>
             <div class="empty-state" id="apps-empty">
-                <div class="empty-icon">&#128241;</div>
-                <p>Apps coming soon! Stay tuned.</p>
+                <p>Apps coming soon.</p>
             </div>
         </div>
     </section>
@@ -143,30 +89,25 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <span class="logo-icon">&#9670;</span>
-                    <span class="logo-text">GIROSHIMA</span>
+                    <span class="logo">GIROSHIMA</span>
+                    <a href="mailto:giroshimagames@gmail.com" class="footer-mail">giroshimagames@gmail.com</a>
                 </div>
+                <div class="footer-social">
+                    <a href="https://www.youtube.com/@girayilhan8198" target="_blank" rel="noopener noreferrer">YouTube</a>
+                    <a href="https://www.linkedin.com/in/girayilhan/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    <a href="https://apps.apple.com/tr/developer/giray-ilhan/id1880998348?l=tr" target="_blank" rel="noopener noreferrer">App Store</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Giroshima <span class="version">v2.0.0</span></p>
                 <div class="footer-links">
                     <a href="terms.html">Terms of Use</a>
                     <a href="privacy.html">Privacy Policy</a>
                 </div>
-                <div class="footer-social">
-                    <a href="https://www.youtube.com/@girayilhan8198" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-link">&#9654; YouTube</a>
-                    <a href="https://www.linkedin.com/in/girayilhan/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-link">&#9670; LinkedIn</a>
-                    <a href="https://apps.apple.com/tr/developer/giray-ilhan/id1880998348?l=tr" target="_blank" rel="noopener noreferrer" aria-label="App Store" class="social-link">&#63743; App Store</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Giroshima. All rights reserved. <span style="color:var(--text-muted); font-size:0.75rem;">v1.2.0</span></p>
             </div>
         </div>
     </footer>
 
-    <script src="js/particles.js"></script>
-    <script src="js/astronaut.js"></script>
-    <script src="js/spacecats.js"></script>
-    <script src="js/interactive.js"></script>
-    <script src="js/minigames.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
