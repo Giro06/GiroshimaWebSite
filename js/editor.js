@@ -953,6 +953,46 @@
             });
         }
 
+        // Upload any data-URI images as files under images/ and swap in their paths,
+        // so site-data.json stays small. Local editor storage is updated too.
+        async function uploadImages(token, data) {
+            const lists = [
+                [data.games, saveGames],
+                [data.pcGames, savePcGames],
+                [data.apps, saveApps]
+            ];
+            for (const [items, save] of lists) {
+                let changed = false;
+                for (const item of items) {
+                    const match = /^data:image\/(\w+);base64,(.+)$/.exec(item.image || '');
+                    if (!match) continue;
+                    const ext = match[1] === 'jpeg' ? 'jpg' : match[1];
+                    const slug = (item.title || 'item').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                    const path = `images/${slug}-${item.id || Date.now()}.${ext}`;
+                    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
+
+                    let sha = null;
+                    const getResp = await fetch(url, { headers: { 'Authorization': `token ${token}` } });
+                    if (getResp.ok) sha = (await getResp.json()).sha;
+
+                    const body = { message: `Upload image for ${item.title}`, content: match[2] };
+                    if (sha) body.sha = sha;
+                    const putResp = await fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    if (!putResp.ok) {
+                        const err = await putResp.json().catch(() => ({}));
+                        throw new Error(`${item.title} görseli yüklenemedi: ${err.message || putResp.status}`);
+                    }
+                    item.image = path;
+                    changed = true;
+                }
+                if (changed) save(items);
+            }
+        }
+
         // Publish directly to GitHub
         if (publishBtn) {
             publishBtn.addEventListener('click', async () => {
@@ -973,6 +1013,8 @@
                 publishBtn.textContent = 'Yayınlanıyor...';
 
                 try {
+                    await uploadImages(token, data);
+
                     const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
 
                     // Get current file SHA (needed for updates)
