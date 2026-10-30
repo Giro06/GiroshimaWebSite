@@ -213,25 +213,6 @@
         }
     }
 
-    // ---- Scroll Reveal Animation ----
-    function initScrollReveal() {
-        if (reducedMotion) return;
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.section-head, .game-card').forEach((el, i) => {
-            el.classList.add('reveal');
-            el.style.transitionDelay = `${(i % 4) * 60}ms`;
-            observer.observe(el);
-        });
-    }
-
     // ---- Init ----
     async function init() {
         initNavbar();
@@ -250,7 +231,7 @@
         renderCardGrid('games-grid', 'games-empty', getItems(GAMES_KEY, 'games'));
         renderCardGrid('apps-grid', 'apps-empty', getItems(APPS_KEY, 'apps'));
 
-        initScrollReveal();
+        document.getElementById('hero').classList.remove('is-loading');
     }
 
     if (document.readyState === 'loading') {
