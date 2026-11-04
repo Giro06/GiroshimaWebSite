@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio - Giroshima</title>
-    <meta name="description" content="Giroshima is a one-person game studio: one developer directing a team of AI agents to ship small, showy PC games fast.">
+    <meta name="description" content="Giroshima is a one-person game studio shipping small, showy PC games fast.">
     <meta name="theme-color" content="#08090b">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/site.css?v=2.1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css?v=2.3.0">
 </head>
 <body>
     <nav class="navbar">
@@ -32,9 +32,9 @@
     <!-- Intro -->
     <header class="page-hero">
         <div class="container">
-            <p class="eyebrow">One developer. A team of AI agents.</p>
+            <p class="eyebrow">One developer. AI where it helps.</p>
             <h1 class="page-title">Small games.<br>Shipped fast.</h1>
-            <p class="lead">Giroshima is a one-person studio. I take mechanics players already love, add one twist, and get the result onto Steam in weeks, not years. No team, no office. Just me and the AI agents I direct.</p>
+            <p class="lead">Giroshima is a one-person studio. I take mechanics players already love, add one twist, and get the result onto Steam in weeks, not years. No team, no office. Just me, with AI tools where they actually save time.</p>
         </div>
     </header>
 
@@ -49,7 +49,7 @@
                 <ul class="principles">
                     <li><strong>Proven mechanic, one twist.</strong> Every idea starts as "known game + one change" and has to pass a scored concept gate before anyone builds it.</li>
                     <li><strong>Built for PC players.</strong> No energy bars, no daily-login chores, no ads in my PC games. Pay once, play.</li>
-                    <li><strong>Fair price, global audience.</strong> Low prices, and every Steam release ships in 10 languages.</li>
+                    <li><strong>Fair price, global audience.</strong> Low prices, and every release is localized for players worldwide.</li>
                     <li><strong>Fun you can see.</strong> Loud, readable, showy games that make sense in a five-second clip.</li>
                     <li><strong>Marketing from data.</strong> AI-driven competitor analysis tells me what the best games in a genre show, say and charge. My store pages, capsules and trailers are built on it.</li>
                 </ul>
@@ -57,87 +57,95 @@
         </div>
     </section>
 
-    <!-- Pipeline: a road the developer walks down as you scroll (js/studio.js) -->
+    <!-- Pipeline: each step adds a layer to the SLOTDOWN cover (js/studio.js) -->
     <section class="section">
         <div class="container">
             <div class="section-head">
                 <h2 class="section-title">How I work</h2>
                 <p class="section-subtitle">A human-directed AI production line</p>
             </div>
-            <p class="lead narrow">I direct a team of AI agents across research, design, code, art, QA, localization and marketing. I make the calls and do the playtesting; agents do the volume. That is how one person ships like a small studio. The same playbook runs every game, and it gets sharper with each release.</p>
-            <div class="road" id="road">
-                <svg class="road-svg" aria-hidden="true">
-                    <path class="road-bed" />
-                    <path class="road-line" />
-                    <path class="road-progress" />
-                </svg>
-                <div class="walker" id="walker" aria-hidden="true"><span>&#129489;&#8205;&#128187;</span></div>
-                <ol class="road-steps">
-                    <li class="road-step">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">01</span>
-                            <h3>Market research</h3>
-                            <p>AI agents analyze comparable Steam hits: tags, prices, capsules, reviews and wishlist signals. No idea starts without at least three proven games behind it.</p>
-                        </div>
+            <p class="lead narrow">I design, build and ship every game myself. AI speeds up the parts where it helps most: market research, competitor analysis, localization and marketing. The same playbook runs every game, and it gets sharper with each release.</p>
+            <p class="forge-intro">Watch the SLOTDOWN cover get built, one step at a time.</p>
+        </div>
+        <div class="forge" id="forge">
+            <div class="forge-inner">
+                <ol class="nodes" id="nodes">
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">01</span><span class="node-title">Market research</span></div>
+                        <span class="node-adds">+ composition guides</span>
+                        <p class="node-desc">Comparable Steam hits analysed with AI: tags, prices, capsules, reviews and wishlist signals. The cover gets its rules before a single pixel.</p>
+                        <span class="node-ai">AI-assisted</span>
                     </li>
-                    <li class="road-step">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">02</span>
-                            <h3>Concept gate</h3>
-                            <p>5–10 pitches scored on 15 criteria. The best two or three get a mock capsule and a two-hour grey-box test.</p>
-                        </div>
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">02</span><span class="node-title">Concept gate</span></div>
+                        <span class="node-adds">+ blueprint sketch</span>
+                        <p class="node-desc">5–10 pitches scored on 15 criteria. The winner gets a mock capsule and a two-hour grey-box test.</p>
                     </li>
-                    <li class="road-step">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">03</span>
-                            <h3>Playable</h3>
-                            <p>A lightweight HTML/JS prototype, playable in days. Agents run automated QA on every build.</p>
-                        </div>
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">03</span><span class="node-title">Playable</span></div>
+                        <span class="node-adds">+ flat background</span>
+                        <p class="node-desc">A lightweight HTML/JS prototype, playable in days, with automated checks on every build.</p>
                     </li>
-                    <li class="road-step">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">04</span>
-                            <h3>Art &amp; story</h3>
-                            <p>Characters, cutscenes and UI art produced and iterated in parallel with gameplay.</p>
-                        </div>
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">04</span><span class="node-title">Art &amp; story</span></div>
+                        <span class="node-adds">+ flat colour: characters &amp; objects</span>
+                        <p class="node-desc">Characters, cutscenes and objects produced in parallel with gameplay.</p>
                     </li>
-                    <li class="road-step">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">05</span>
-                            <h3>Playtest &amp; polish</h3>
-                            <p>Blunt human playtest notes turned into fix lists and resolved in parallel.</p>
-                        </div>
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">05</span><span class="node-title">Playtest &amp; polish</span></div>
+                        <span class="node-adds">+ ink lines</span>
+                        <p class="node-desc">Blunt human playtest notes turned into fix lists and resolved in parallel.</p>
                     </li>
-                    <li class="road-step">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">06</span>
-                            <h3>10 languages</h3>
-                            <p>Game text, store page and trailer captions localized before launch.</p>
-                        </div>
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">06</span><span class="node-title">Localization</span></div>
+                        <span class="node-adds">+ game logo</span>
+                        <p class="node-desc">Game text, store page and the title treatment, localized into many languages.</p>
+                        <span class="node-ai">AI-assisted</span>
                     </li>
-                    <li class="road-step">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">07</span>
-                            <h3>AI-driven marketing</h3>
-                            <p>Competitor analysis shows what the top games in the tag put on their capsules, trailers and store pages. Agents draft variants on that basis, I test and pick. Then outreach to creators and press.</p>
-                        </div>
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">07</span><span class="node-title">AI-driven marketing</span></div>
+                        <span class="node-adds">+ shading</span>
+                        <p class="node-desc">AI-driven competitor analysis shows what the top games in the tag put on their capsules. I draft variants, test and pick.</p>
+                        <span class="node-ai">AI-assisted</span>
                     </li>
-                    <li class="road-step road-finish">
-                        <span class="road-dot"></span>
-                        <div class="road-card">
-                            <span class="step-no">08</span>
-                            <h3>Ship on Steam</h3>
-                            <p>Desktop build with Steamworks, review, release. Then the next game starts down the same road.</p>
-                        </div>
+                    <li class="node">
+                        <div class="node-head"><span class="node-no">08</span><span class="node-title">Ship on Steam</span></div>
+                        <span class="node-adds">+ effects &rarr; press</span>
+                        <p class="node-desc">Desktop build with Steamworks, review, release. Then the next game starts.</p>
                     </li>
+                    <span class="spine" aria-hidden="true"><span class="spine-fill" id="spine-fill"></span></span>
                 </ol>
+
+                <div class="viewport">
+                    <div class="stack" id="stack">
+                        <div class="layer layer-guides" style="--i:0" data-name="01 · Guides">
+                            <span class="guide-box" style="left:3%;top:6%;width:56%;height:30%">LOGO · READABLE AT 120PX</span>
+                            <span class="guide-box" style="left:52%;top:4%;width:30%;height:52%">HOOK CHARACTER</span>
+                            <span class="guide-box" style="left:40%;top:44%;width:58%;height:48%">CORE MECHANIC</span>
+                        </div>
+                        <div class="layer layer-blueprint" style="--i:1" data-name="02 · Blueprint"></div>
+                        <div class="layer layer-flat-bg" style="--i:2" data-name="03 · Flat background"></div>
+                        <div class="layer layer-objects-flat" style="--i:3" data-name="04 · Flat colour"></div>
+                        <div class="layer layer-ink" style="--i:4" data-name="05 · Ink lines"></div>
+                        <div class="layer layer-logo" style="--i:5" data-name="06 · Logo"></div>
+                        <div class="layer layer-shading" style="--i:6" data-name="07 · Shading"></div>
+                        <div class="layer layer-fx" style="--i:7" data-name="08 · Effects">
+                            <span class="spark" style="left:78%;top:14%"></span>
+                            <span class="spark" style="left:91%;top:30%;animation-delay:.4s"></span>
+                            <span class="spark" style="left:8%;top:12%;animation-delay:.8s"></span>
+                            <span class="spark" style="left:50%;top:8%;animation-delay:1.1s"></span>
+                            <span class="spark" style="left:70%;top:88%;animation-delay:.6s"></span>
+                        </div>
+                        <div class="layer layer-final" style="--i:0"></div>
+                        <span class="shipped">Shipped</span>
+                    </div>
+
+                    <div class="readout" aria-live="polite">
+                        <div class="readout-meta" id="readout-meta">LAYER 00 / 08</div>
+                        <h3 id="readout-layer">Scroll to build the cover</h3>
+                        <div class="readout-bar" id="readout-bar"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -152,7 +160,7 @@
                 <div><dt>Steam games</dt><dd>2</dd></div>
                 <div><dt>Mobile &amp; web games</dt><dd>6</dd></div>
                 <div><dt>Apps</dt><dd>2</dd></div>
-                <div><dt>Languages per Steam launch</dt><dd>10</dd></div>
+                <div><dt>Localized for players worldwide</dt><dd>Global</dd></div>
             </dl>
             <p class="stats-note">Shipped on Steam, the App Store, itch.io and CrazyGames.</p>
         </div>
@@ -214,7 +222,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Giroshima <span class="version">v2.1.1</span></p>
+                <p>&copy; 2026 Giroshima <span class="version">v2.3.0</span></p>
                 <div class="footer-links">
                     <a href="terms.html">Terms of Use</a>
                     <a href="privacy.html">Privacy Policy</a>
@@ -223,7 +231,9 @@
         </div>
     </footer>
 
-    <script src="js/main.js?v=2.1.1"></script>
-    <script src="js/studio.js?v=2.1.1"></script>
+    <svg class="feed-layer" aria-hidden="true"><path class="feed" id="feed" /><circle class="pulse" id="pulse" r="5" style="opacity:0" /></svg>
+
+    <script src="js/main.js?v=2.3.0"></script>
+    <script src="js/studio.js?v=2.3.0"></script>
 </body>
 </html>
