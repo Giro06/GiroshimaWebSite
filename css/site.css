@@ -443,6 +443,235 @@ img { display: block; max-width: 100%; }
 .footer-links a { font-size: 0.8rem; color: var(--text-muted); }
 .version { margin-left: 8px; opacity: 0.6; }
 
+/* ---- Studio page ---- */
+.page-hero {
+    padding: clamp(140px, 22vh, 220px) 0 clamp(40px, 8vw, 80px);
+    background: radial-gradient(ellipse at 80% 0%, rgba(255, 77, 77, 0.14), transparent 55%);
+}
+
+.page-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(3.5rem, 11vw, 9rem);
+    line-height: 0.88;
+    text-transform: uppercase;
+}
+
+.lead {
+    margin-top: 24px;
+    font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+    color: var(--text-dim);
+    max-width: 52ch;
+}
+
+.lead.narrow { margin: 0 0 40px; }
+
+.split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: 32px 64px;
+}
+
+.section-head.bare { border: 0; padding: 0; margin: 0; }
+
+.prose { color: var(--text-dim); font-size: 1.05rem; }
+.prose > p { margin-bottom: 24px; }
+
+.principles { list-style: none; border-top: 1px solid var(--line); }
+.principles li { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.principles strong { color: var(--text); font-weight: 600; margin-right: 4px; }
+
+/* Road: steps alternate sides, js/studio.js draws the path through the dots */
+.road { position: relative; padding-top: 56px; }
+
+.road-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    z-index: 0;
+}
+
+.road-svg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.road-bed { stroke: #191b20; stroke-width: 46; }
+.road-line { stroke: rgba(255, 255, 255, 0.22); stroke-width: 2; stroke-dasharray: 12 14; }
+.road-progress { stroke: var(--accent); stroke-width: 4; filter: drop-shadow(0 0 6px rgba(255, 77, 77, 0.6)); }
+
+.road-steps {
+    list-style: none;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 96px;
+}
+
+.road-step {
+    --dot-x: 22%;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.road-step:nth-child(even) { --dot-x: 78%; justify-content: flex-end; }
+
+.road-dot {
+    position: absolute;
+    left: var(--dot-x);
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid #3a3d44;
+    z-index: 2;
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.road-step.reached .road-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 6px rgba(255, 77, 77, 0.18);
+}
+
+.road-finish .road-dot { width: 30px; height: 30px; }
+
+.road-card {
+    width: min(460px, calc(100% - var(--dot-x) - 56px));
+    margin-left: calc(var(--dot-x) + 44px);
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px 24px 26px;
+    transform: translateY(8px);
+    transition: transform 0.5s var(--ease), border-color 0.5s;
+}
+
+/* Card stays opaque so the road never shows through; only its content dims */
+.road-card > * { opacity: 0.4; transition: opacity 0.5s var(--ease); }
+.road-step.reached .road-card > * { opacity: 1; }
+
+.road-step:nth-child(even) .road-card {
+    width: min(460px, calc(var(--dot-x) - 56px));
+    margin-left: 0;
+    margin-right: calc(100% - var(--dot-x) + 44px);
+}
+
+.road-step.reached .road-card { transform: none; border-color: rgba(255, 77, 77, 0.35); }
+.road-card h3 { font-size: 1.15rem; font-weight: 600; margin: 8px 0 8px; }
+.road-card p { color: var(--text-dim); font-size: 0.95rem; }
+
+.walker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.walker span {
+    display: block;
+    width: 48px;
+    height: 48px;
+    translate: -50% -100%;
+    font-size: 40px;
+    line-height: 48px;
+    text-align: center;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6));
+    animation: walk-bob 0.6s ease-in-out infinite alternate;
+}
+
+.walker.facing-left span { scale: -1 1; }
+.walker.arrived span { animation: none; }
+
+@keyframes walk-bob {
+    from { transform: translateY(0) rotate(-4deg); }
+    to { transform: translateY(-5px) rotate(4deg); }
+}
+
+.step-no {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.stats div { display: flex; flex-direction: column-reverse; gap: 4px; }
+
+.stats dd {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 9vw, 7rem);
+    line-height: 0.9;
+}
+
+.stats dt { color: var(--text-muted); font-size: 0.9rem; }
+.stats-note { margin-top: 28px; color: var(--text-muted); font-size: 0.9rem; }
+
+.roadmap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.roadmap-item {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.roadmap-item h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 2.2rem;
+    line-height: 1;
+    margin: 16px 0 10px;
+}
+
+.roadmap-item p { color: var(--text-dim); font-size: 0.95rem; flex: 1; }
+
+.tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    padding: 4px 10px;
+}
+
+.tag-live { color: #fff; background: var(--accent); border-color: var(--accent); }
+
+.text-link {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.text-link:hover { color: var(--accent-hover); }
+
+.cta-block {
+    border-top: 1px solid var(--line);
+    padding-top: clamp(48px, 8vw, 96px);
+}
+
+.cta-block .section-title { font-size: clamp(3rem, 8vw, 6rem); }
+
 /* ---- Legal pages ---- */
 .legal-page { padding: 140px var(--gutter) 64px; }
 
@@ -523,6 +752,27 @@ img { display: block; max-width: 100%; }
     .wide-grid { grid-template-columns: 1fr; }
     .game-card-info { flex-direction: column; gap: 2px; }
     .scroll-hint { display: none; }
+}
+
+@media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); gap: 32px 16px; }
+    .roadmap { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+    .road-steps { gap: 40px; }
+    .road-step,
+    .road-step:nth-child(even) { --dot-x: 22px; justify-content: flex-start; }
+    .road-step:nth-child(even) { --dot-x: 38px; }
+    .road-card,
+    .road-step:nth-child(even) .road-card {
+        width: auto;
+        flex: 1;
+        margin: 0 0 0 72px;
+    }
+    .road-bed { stroke-width: 30; }
+    .walker span { font-size: 30px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -223,10 +223,11 @@
         await loadSiteData();
 
         const pcGames = getItems(PCGAMES_KEY, 'pcGames');
+        // Hero features the top PC game; the On Steam grid lists all of them
         renderHero(pcGames[0]);
-        if (pcGames.length > 1) {
+        if (pcGames.length > 0) {
             document.getElementById('pc-games').hidden = false;
-            renderCardGrid('pc-games-grid', null, pcGames.slice(1));
+            renderCardGrid('pc-games-grid', null, pcGames);
         }
         renderCardGrid('games-grid', 'games-empty', getItems(GAMES_KEY, 'games'));
         renderCardGrid('apps-grid', 'apps-empty', getItems(APPS_KEY, 'apps'));

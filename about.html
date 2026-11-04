@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - Giroshima</title>
+    <meta name="description" content="Giroshima is a one-person game studio: one developer directing a team of AI agents to ship small, showy PC games fast.">
+    <meta name="theme-color" content="#08090b">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css?v=2.1.1">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">GIROSHIMA</a>
+            <ul class="nav-links">
+                <li><a href="index.html#games" class="nav-link">Games</a></li>
+                <li><a href="index.html#apps" class="nav-link">Apps</a></li>
+                <li><a href="about.html" class="nav-link active">Studio</a></li>
+                <li><a href="mailto:giroshimagames@gmail.com" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Intro -->
+    <header class="page-hero">
+        <div class="container">
+            <p class="eyebrow">One developer. A team of AI agents.</p>
+            <h1 class="page-title">Small games.<br>Shipped fast.</h1>
+            <p class="lead">Giroshima is a one-person studio. I take mechanics players already love, add one twist, and get the result onto Steam in weeks, not years. No team, no office. Just me and the AI agents I direct.</p>
+        </div>
+    </header>
+
+    <!-- Mission -->
+    <section class="section">
+        <div class="container split">
+            <div class="section-head bare">
+                <h2 class="section-title">What I'm after</h2>
+            </div>
+            <div class="prose">
+                <p>Most small games die in development, and solo projects die fastest. Mine get finished. I keep scope tight, test ideas before committing to them, and put a playable build in front of players on day one.</p>
+                <ul class="principles">
+                    <li><strong>Proven mechanic, one twist.</strong> Every idea starts as "known game + one change" and has to pass a scored concept gate before anyone builds it.</li>
+                    <li><strong>Built for PC players.</strong> No energy bars, no daily-login chores, no ads in my PC games. Pay once, play.</li>
+                    <li><strong>Fair price, global audience.</strong> Low prices, and every Steam release ships in 10 languages.</li>
+                    <li><strong>Fun you can see.</strong> Loud, readable, showy games that make sense in a five-second clip.</li>
+                    <li><strong>Marketing from data.</strong> AI-driven competitor analysis tells me what the best games in a genre show, say and charge. My store pages, capsules and trailers are built on it.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pipeline: a road the developer walks down as you scroll (js/studio.js) -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="section-title">How I work</h2>
+                <p class="section-subtitle">A human-directed AI production line</p>
+            </div>
+            <p class="lead narrow">I direct a team of AI agents across research, design, code, art, QA, localization and marketing. I make the calls and do the playtesting; agents do the volume. That is how one person ships like a small studio. The same playbook runs every game, and it gets sharper with each release.</p>
+            <div class="road" id="road">
+                <svg class="road-svg" aria-hidden="true">
+                    <path class="road-bed" />
+                    <path class="road-line" />
+                    <path class="road-progress" />
+                </svg>
+                <div class="walker" id="walker" aria-hidden="true"><span>&#129489;&#8205;&#128187;</span></div>
+                <ol class="road-steps">
+                    <li class="road-step">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">01</span>
+                            <h3>Market research</h3>
+                            <p>AI agents analyze comparable Steam hits: tags, prices, capsules, reviews and wishlist signals. No idea starts without at least three proven games behind it.</p>
+                        </div>
+                    </li>
+                    <li class="road-step">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">02</span>
+                            <h3>Concept gate</h3>
+                            <p>5–10 pitches scored on 15 criteria. The best two or three get a mock capsule and a two-hour grey-box test.</p>
+                        </div>
+                    </li>
+                    <li class="road-step">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">03</span>
+                            <h3>Playable</h3>
+                            <p>A lightweight HTML/JS prototype, playable in days. Agents run automated QA on every build.</p>
+                        </div>
+                    </li>
+                    <li class="road-step">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">04</span>
+                            <h3>Art &amp; story</h3>
+                            <p>Characters, cutscenes and UI art produced and iterated in parallel with gameplay.</p>
+                        </div>
+                    </li>
+                    <li class="road-step">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">05</span>
+                            <h3>Playtest &amp; polish</h3>
+                            <p>Blunt human playtest notes turned into fix lists and resolved in parallel.</p>
+                        </div>
+                    </li>
+                    <li class="road-step">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">06</span>
+                            <h3>10 languages</h3>
+                            <p>Game text, store page and trailer captions localized before launch.</p>
+                        </div>
+                    </li>
+                    <li class="road-step">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">07</span>
+                            <h3>AI-driven marketing</h3>
+                            <p>Competitor analysis shows what the top games in the tag put on their capsules, trailers and store pages. Agents draft variants on that basis, I test and pick. Then outreach to creators and press.</p>
+                        </div>
+                    </li>
+                    <li class="road-step road-finish">
+                        <span class="road-dot"></span>
+                        <div class="road-card">
+                            <span class="step-no">08</span>
+                            <h3>Ship on Steam</h3>
+                            <p>Desktop build with Steamworks, review, release. Then the next game starts down the same road.</p>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Numbers -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="section-title">So far</h2>
+            </div>
+            <dl class="stats">
+                <div><dt>Steam games</dt><dd>2</dd></div>
+                <div><dt>Mobile &amp; web games</dt><dd>6</dd></div>
+                <div><dt>Apps</dt><dd>2</dd></div>
+                <div><dt>Languages per Steam launch</dt><dd>10</dd></div>
+            </dl>
+            <p class="stats-note">Shipped on Steam, the App Store, itch.io and CrazyGames.</p>
+        </div>
+    </section>
+
+    <!-- Now / Next -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="section-title">Where I am</h2>
+            </div>
+            <div class="roadmap">
+                <div class="roadmap-item">
+                    <span class="tag tag-live">Now</span>
+                    <h3>SLOTDOWN</h3>
+                    <p>The first game through the full pipeline, from concept gate to Steam store page.</p>
+                    <a href="https://store.steampowered.com/app/5469010/SLOTDOWN" target="_blank" rel="noopener noreferrer" class="text-link">Steam page &rarr;</a>
+                </div>
+                <div class="roadmap-item">
+                    <span class="tag">In development</span>
+                    <h3>Orbsmith</h3>
+                    <p>An idle action RPG about forging gear and gems, built on the same playbook.</p>
+                    <a href="https://store.steampowered.com/app/4802000/Orbsmith/" target="_blank" rel="noopener noreferrer" class="text-link">Steam page &rarr;</a>
+                </div>
+                <div class="roadmap-item">
+                    <span class="tag">Next</span>
+                    <h3>More Steam games</h3>
+                    <p>Each new game starts from a shared kit, so every release ships faster than the last.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-block">
+                <h2 class="section-title">Let's talk</h2>
+                <p class="lead">Publishers, press, creators and players: I read everything, and I answer it myself.</p>
+                <div class="hero-cta">
+                    <a href="mailto:giroshimagames@gmail.com" class="btn btn-primary">giroshimagames@gmail.com</a>
+                    <a href="index.html#games" class="btn btn-ghost">See the games</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo">GIROSHIMA</span>
+                    <a href="mailto:giroshimagames@gmail.com" class="footer-mail">giroshimagames@gmail.com</a>
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.youtube.com/@girayilhan8198" target="_blank" rel="noopener noreferrer">YouTube</a>
+                    <a href="https://www.linkedin.com/in/girayilhan/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    <a href="https://apps.apple.com/tr/developer/giray-ilhan/id1880998348?l=tr" target="_blank" rel="noopener noreferrer">App Store</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Giroshima <span class="version">v2.1.1</span></p>
+                <div class="footer-links">
+                    <a href="terms.html">Terms of Use</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js?v=2.1.1"></script>
+    <script src="js/studio.js?v=2.1.1"></script>
+</body>
+</html>
