@@ -27,12 +27,17 @@
     }
 
     // ---- Helpers ----
-    // 1st: localStorage (editor preview), 2nd: site-data.json (published data from repo)
+    // Published site-data.json, unless the page is opened with ?preview to see the
+    // editor's unpublished local copy (otherwise a stale editor copy hides new games)
+    const previewMode = new URLSearchParams(location.search).has('preview');
+
     function getItems(storageKey, dataKey) {
-        try {
-            const stored = JSON.parse(localStorage.getItem(storageKey));
-            if (stored && stored.length > 0) return stored;
-        } catch {}
+        if (previewMode) {
+            try {
+                const stored = JSON.parse(localStorage.getItem(storageKey));
+                if (stored && stored.length > 0) return stored;
+            } catch {}
+        }
         if (siteData && siteData[dataKey] && siteData[dataKey].length > 0) return siteData[dataKey];
         return [];
     }
